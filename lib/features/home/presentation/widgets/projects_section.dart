@@ -3,6 +3,7 @@ import '../../../../core/constants/app_colors.dart';
 import '../../../../core/constants/app_spacing.dart';
 import '../../../../core/constants/app_typography.dart';
 import '../../../../core/utils/responsive.dart';
+import '../../../../shared/widgets/scroll_reveal.dart';
 import '../../../../shared/widgets/section_header.dart';
 import '../../../../shared/widgets/project_card.dart';
 import '../../domain/data/portfolio_data.dart';
@@ -45,9 +46,12 @@ class _ProjectsSectionState extends State<ProjectsSection> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              const SectionHeader(
-                overline: 'What I\'ve Built',
-                title: 'Featured Projects.',
+              ScrollReveal(
+                key: const ValueKey('projects-header'),
+                child: const SectionHeader(
+                  overline: 'What I\'ve Built',
+                  title: 'Featured Projects.',
+                ),
               ),
               const SizedBox(height: AppSpacing.xxl),
 
@@ -111,10 +115,16 @@ class _ProjectsSectionState extends State<ProjectsSection> {
               else if (isMobile)
                 Column(
                   children: projects
-                      .map((p) => Padding(
-                            padding: const EdgeInsets.only(
-                                bottom: AppSpacing.lg),
-                            child: ProjectCard(project: p),
+                      .asMap()
+                      .entries
+                      .map((e) => ScrollReveal(
+                            key: ValueKey('project-mobile-${e.key}'),
+                            delay: Duration(milliseconds: e.key * 100),
+                            child: Padding(
+                              padding: const EdgeInsets.only(
+                                  bottom: AppSpacing.lg),
+                              child: ProjectCard(project: e.value),
+                            ),
                           ))
                       .toList(),
                 )
@@ -128,7 +138,7 @@ class _ProjectsSectionState extends State<ProjectsSection> {
   }
 
   Widget _buildDesktopGrid(List<Project> projects) {
-    // Build 2-column grid manually
+    // Build 2-column grid manually with staggered ScrollReveal
     final rows = <Widget>[];
     for (int i = 0; i < projects.length; i += 2) {
       rows.add(
@@ -137,10 +147,22 @@ class _ProjectsSectionState extends State<ProjectsSection> {
           child: Row(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Expanded(child: ProjectCard(project: projects[i])),
+              Expanded(
+                child: ScrollReveal(
+                  key: ValueKey('project-desktop-$i'),
+                  delay: Duration(milliseconds: (i ~/ 2) * 80),
+                  child: ProjectCard(project: projects[i]),
+                ),
+              ),
               const SizedBox(width: AppSpacing.lg),
               if (i + 1 < projects.length)
-                Expanded(child: ProjectCard(project: projects[i + 1]))
+                Expanded(
+                  child: ScrollReveal(
+                    key: ValueKey('project-desktop-${i + 1}'),
+                    delay: Duration(milliseconds: (i ~/ 2) * 80 + 80),
+                    child: ProjectCard(project: projects[i + 1]),
+                  ),
+                )
               else
                 const Expanded(child: SizedBox()),
             ],

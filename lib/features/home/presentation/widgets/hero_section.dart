@@ -4,6 +4,7 @@ import '../../../../core/constants/app_colors.dart';
 import '../../../../core/constants/app_spacing.dart';
 import '../../../../core/constants/app_typography.dart';
 import '../../../../core/utils/responsive.dart';
+import '../../../../shared/widgets/rolling_text.dart';
 
 class HeroSection extends StatefulWidget {
   const HeroSection({super.key});
@@ -165,10 +166,19 @@ class _HeroSectionState extends State<HeroSection>
         // Tagline
         _animated(
           2,
-          Text(
-            'Building polished Flutter apps —\none widget at a time.',
-            style: AppTypography.bodyLarge.copyWith(fontSize: 18),
-            textAlign: centered ? TextAlign.center : TextAlign.start,
+          RollingText(
+            texts: const [
+              'Flutter Developer.',
+              'Mobile Engineer.',
+              'Clean Architecture Fan.',
+              'Open to Internships.',
+            ],
+            style: AppTypography.displayMedium.copyWith(
+              color: AppColors.textPrimary,
+              fontWeight: FontWeight.bold,
+            ),
+            switchInterval: const Duration(seconds: 2),
+            animDuration: const Duration(milliseconds: 380),
           ),
         ),
         const SizedBox(height: AppSpacing.xl),

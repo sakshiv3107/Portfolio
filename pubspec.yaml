@@ -27,8 +27,11 @@ dependencies:
   # Icons
   font_awesome_flutter: ^10.7.0
 
-  # Animation
+  # Animation helpers
   animate_do: ^3.3.4
+
+  # Scroll visibility detection (for scroll-triggered animations)
+  visibility_detector: ^0.4.0+2
 
   # HTTP for network images
   http: ^1.2.1

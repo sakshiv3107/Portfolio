@@ -162,14 +162,34 @@ class _NavLink extends StatefulWidget {
   State<_NavLink> createState() => _NavLinkState();
 }
 
-class _NavLinkState extends State<_NavLink> {
-  bool _hovered = false;
+class _NavLinkState extends State<_NavLink>
+    with SingleTickerProviderStateMixin {
+  late AnimationController _ctrl;
+  late Animation<double> _underlineWidth;
+
+  @override
+  void initState() {
+    super.initState();
+    _ctrl = AnimationController(
+      vsync: this,
+      duration: const Duration(milliseconds: 200),
+    );
+    _underlineWidth =
+        CurvedAnimation(parent: _ctrl, curve: Curves.easeOut);
+  }
+
+  @override
+  void dispose() {
+    _ctrl.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
     return MouseRegion(
-      onEnter: (_) => setState(() => _hovered = true),
-      onExit: (_) => setState(() => _hovered = false),
+      onEnter: (_) => _ctrl.forward(),
+      onExit: (_) => _ctrl.reverse(),
+      cursor: SystemMouseCursors.click,
       child: GestureDetector(
         onTap: widget.onTap,
         child: Padding(
@@ -177,21 +197,32 @@ class _NavLinkState extends State<_NavLink> {
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              Text(
-                widget.label,
-                style: AppTypography.labelLarge.copyWith(
-                  color:
-                      _hovered ? AppColors.accentCyan : AppColors.textSecondary,
+              AnimatedBuilder(
+                animation: _ctrl,
+                builder: (_, __) => Text(
+                  widget.label,
+                  style: AppTypography.labelLarge.copyWith(
+                    color: Color.lerp(
+                      AppColors.textSecondary,
+                      AppColors.accentCyan,
+                      _ctrl.value,
+                    ),
+                  ),
                 ),
               ),
-              const SizedBox(height: 2),
-              AnimatedContainer(
-                duration: const Duration(milliseconds: 200),
-                height: 2,
-                width: _hovered ? 24 : 0,
-                decoration: BoxDecoration(
-                  color: AppColors.accentCyan,
-                  borderRadius: BorderRadius.circular(1),
+              const SizedBox(height: 3),
+              AnimatedBuilder(
+                animation: _underlineWidth,
+                builder: (_, __) => Align(
+                  alignment: Alignment.centerLeft,
+                  child: Container(
+                    height: 2,
+                    width: 48 * _underlineWidth.value,
+                    decoration: BoxDecoration(
+                      color: AppColors.accentCyan,
+                      borderRadius: BorderRadius.circular(2),
+                    ),
+                  ),
                 ),
               ),
             ],

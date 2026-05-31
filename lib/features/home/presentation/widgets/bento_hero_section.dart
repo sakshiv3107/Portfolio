@@ -6,6 +6,7 @@ import '../../../../core/constants/app_spacing.dart';
 import '../../../../core/constants/app_typography.dart';
 import '../../../../core/utils/responsive.dart';
 import '../../../../shared/widgets/bento_card.dart';
+import '../../../../shared/widgets/rolling_text.dart';
 
 class BentoHeroSection extends StatefulWidget {
   const BentoHeroSection({super.key});
@@ -111,31 +112,36 @@ class _BentoHeroSectionState extends State<BentoHeroSection>
     );
   }
 
-  // Header Block with Pulsing Pulse Dot indicator
+  // Header Block with Rolling tagline and Pulsing Dot indicator
   Widget _buildIntroHeader(BuildContext context) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        RichText(
-          text: TextSpan(
-            children: [
-              TextSpan(
-                text: "Hi, I'm Sakshi —\n",
-                style: AppTypography.displayLarge.copyWith(
-                  fontWeight: FontWeight.w800,
-                  height: 1.15,
-                ),
-              ),
-              TextSpan(
-                text: "Flutter & Mobile Developer.",
-                style: AppTypography.displayLarge.copyWith(
-                  color: AppColors.textSecondary,
-                  fontWeight: FontWeight.w700,
-                  height: 1.15,
-                ),
-              ),
-            ],
+        // Static greeting line
+        Text(
+          "Hi, I'm Sakshi —",
+          style: AppTypography.displayLarge.copyWith(
+            fontWeight: FontWeight.w800,
+            height: 1.15,
           ),
+        ),
+        const SizedBox(height: 6),
+        // Rolling slot-machine tagline
+        RollingText(
+          texts: const [
+            'Flutter Developer.',
+            'Mobile Engineer.',
+            'Clean Arch Enthusiast.',
+            'UI Craftsperson.',
+            'Riverpod Aficionado.',
+          ],
+          style: AppTypography.displayLarge.copyWith(
+            color: AppColors.accentCyan,
+            fontWeight: FontWeight.w700,
+            height: 1.15,
+          ),
+          switchInterval: const Duration(seconds: 2),
+          animDuration: const Duration(milliseconds: 420),
         ),
         const SizedBox(height: AppSpacing.lg),
         Row(
