@@ -1,50 +1,28 @@
-import 'dart:math';
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../../core/constants/app_colors.dart';
 import '../../../../core/constants/app_spacing.dart';
 import '../../../../core/constants/app_typography.dart';
 import '../../../../core/utils/responsive.dart';
 import '../../../../shared/widgets/section_header.dart';
 import '../../../../shared/widgets/bento_card.dart';
+import '../../domain/data/portfolio_data.dart';
+import '../providers/github_provider.dart';
 
-class GitHubSection extends StatefulWidget {
+class GitHubSection extends ConsumerStatefulWidget {
   const GitHubSection({super.key});
 
   @override
-  State<GitHubSection> createState() => _GitHubSectionState();
+  ConsumerState<GitHubSection> createState() => _GitHubSectionState();
 }
 
-class _GitHubSectionState extends State<GitHubSection>
+class _GitHubSectionState extends ConsumerState<GitHubSection>
     with SingleTickerProviderStateMixin {
   late AnimationController _animationController;
-  final List<int> _contributionGrid = [];
-  final String _username = 'sakshiv3107';
 
   @override
   void initState() {
     super.initState();
-    // Generate simulated contribution data (0 = empty, 1 = low, 2 = medium, 3 = high)
-    final random = Random(42); // Seed for consistency
-    for (int i = 0; i < 53 * 7; i++) {
-      // Create natural-looking clusters
-      final weekday = i % 7;
-      final isWeekend = weekday == 0 || weekday == 6;
-      if (isWeekend && random.nextDouble() > 0.3) {
-        _contributionGrid.add(0);
-      } else {
-        final val = random.nextDouble();
-        if (val < 0.35) {
-          _contributionGrid.add(0);
-        } else if (val < 0.70) {
-          _contributionGrid.add(1);
-        } else if (val < 0.90) {
-          _contributionGrid.add(2);
-        } else {
-          _contributionGrid.add(3);
-        }
-      }
-    }
-
     _animationController = AnimationController(
       vsync: this,
       duration: const Duration(milliseconds: 1500),
@@ -57,22 +35,17 @@ class _GitHubSectionState extends State<GitHubSection>
     super.dispose();
   }
 
-  Color _getContributionColor(int level) {
-    switch (level) {
-      case 1:
-        return AppColors.accentCyan.withValues(alpha: 0.25);
-      case 2:
-        return AppColors.accentCyan.withValues(alpha: 0.60);
-      case 3:
-        return AppColors.accentCyan;
-      case 0:
-      default:
-        return AppColors.border.withValues(alpha: 0.3);
-    }
+  Color _hexToColor(String hexString) {
+    final buffer = StringBuffer();
+    if (hexString.length == 6 || hexString.length == 7) buffer.write('ff');
+    buffer.write(hexString.replaceFirst('#', ''));
+    return Color(int.parse(buffer.toString(), radix: 16));
   }
 
   @override
   Widget build(BuildContext context) {
+    final heatmapAsync = ref.watch(githubHeatmapProvider(PortfolioData.githubUsername));
+    final repoStatsAsync = ref.watch(githubRepoStatsProvider(PortfolioData.githubUsername));
 
     return Container(
       width: double.infinity,
@@ -83,8 +56,7 @@ class _GitHubSectionState extends State<GitHubSection>
       ),
       child: Center(
         child: ConstrainedBox(
-          constraints:
-              const BoxConstraints(maxWidth: AppSpacing.maxContentWidth),
+          constraints: const BoxConstraints(maxWidth: AppSpacing.maxContentWidth),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
@@ -98,8 +70,7 @@ class _GitHubSectionState extends State<GitHubSection>
               Row(
                 children: [
                   Container(
-                    padding: const EdgeInsets.symmetric(
-                        horizontal: 12, vertical: 6),
+                    padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
                     decoration: BoxDecoration(
                       color: AppColors.surface.withValues(alpha: 0.5),
                       borderRadius: BorderRadius.circular(8),
@@ -115,7 +86,7 @@ class _GitHubSectionState extends State<GitHubSection>
                         ),
                         const SizedBox(width: 6),
                         Text(
-                          _username,
+                          PortfolioData.githubUsername,
                           style: AppTypography.code.copyWith(fontSize: 13),
                         ),
                       ],
@@ -140,79 +111,40 @@ class _GitHubSectionState extends State<GitHubSection>
                             fontWeight: FontWeight.bold,
                           ),
                         ),
-                        Text(
-                          '854 contributions in the last year',
-                          style: AppTypography.bodySmall.copyWith(
-                            color: AppColors.textSecondary,
+                        heatmapAsync.when(
+                          data: (data) => Text(
+                            '${data.totalContributions} contributions in the last year',
+                            style: AppTypography.bodySmall.copyWith(
+                              color: AppColors.textSecondary,
+                            ),
                           ),
+                          loading: () => const SizedBox(width: 100, height: 14),
+                          error: (_, __) => const SizedBox(),
                         ),
                       ],
                     ),
                     const SizedBox(height: 24),
-                    // Responsive Grid View Wrapper
-                    SingleChildScrollView(
-                      scrollDirection: Axis.horizontal,
-                      child: Row(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          // Weekdays labels column
-                          Column(
-                            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                            children: const [
-                              Text('Mon', style: TextStyle(color: AppColors.textSecondary, fontSize: 10)),
-                              SizedBox(height: 12),
-                              Text('Wed', style: TextStyle(color: AppColors.textSecondary, fontSize: 10)),
-                              SizedBox(height: 12),
-                              Text('Fri', style: TextStyle(color: AppColors.textSecondary, fontSize: 10)),
-                            ],
+                    
+                    // Heatmap Grid
+                    heatmapAsync.when(
+                      data: (data) => _buildHeatmapGrid(data.weeks),
+                      loading: () => const SizedBox(
+                        height: 100,
+                        child: Center(
+                          child: CircularProgressIndicator(color: AppColors.accentCyan),
+                        ),
+                      ),
+                      error: (err, _) => SizedBox(
+                        height: 100,
+                        child: Center(
+                          child: Text(
+                            'Failed to load heatmap data.',
+                            style: AppTypography.bodySmall.copyWith(color: AppColors.textSecondary),
                           ),
-                          const SizedBox(width: 12),
-                          // Heatmap grid using AnimatedBuilder
-                          AnimatedBuilder(
-                            animation: _animationController,
-                            builder: (context, child) {
-                              return Row(
-                                children: List.generate(53, (colIndex) {
-                                  return Padding(
-                                    padding: const EdgeInsets.only(right: 3.5),
-                                    child: Column(
-                                      children: List.generate(7, (rowIndex) {
-                                        final index = colIndex * 7 + rowIndex;
-                                        final level = _contributionGrid[index];
-                                        // Calculate animated size / color factors
-                                        final delayFactor = (colIndex + rowIndex) / (53 + 7);
-                                        final scale = Tween<double>(begin: 0.0, end: 1.0)
-                                            .animate(
-                                              CurvedAnimation(
-                                                parent: _animationController,
-                                                curve: Interval(
-                                                  (delayFactor * 0.7).clamp(0.0, 1.0),
-                                                  (delayFactor * 0.7 + 0.3).clamp(0.0, 1.0),
-                                                  curve: Curves.easeOutBack,
-                                                ),
-                                              ),
-                                            )
-                                            .value;
-
-                                        return Container(
-                                          width: 10 * scale,
-                                          height: 10 * scale,
-                                          margin: const EdgeInsets.only(bottom: 3.5),
-                                          decoration: BoxDecoration(
-                                            color: _getContributionColor(level),
-                                            borderRadius: BorderRadius.circular(2),
-                                          ),
-                                        );
-                                      }),
-                                    ),
-                                  );
-                                }),
-                              );
-                            },
-                          ),
-                        ],
+                        ),
                       ),
                     ),
+
                     const SizedBox(height: 16),
                     // Legend
                     Row(
@@ -220,13 +152,15 @@ class _GitHubSectionState extends State<GitHubSection>
                       children: [
                         Text('Less', style: AppTypography.bodySmall),
                         const SizedBox(width: 6),
-                        _buildLegendBox(0),
+                        _buildLegendBox('#ebedf0'),
                         const SizedBox(width: 4),
-                        _buildLegendBox(1),
+                        _buildLegendBox('#9be9a8'),
                         const SizedBox(width: 4),
-                        _buildLegendBox(2),
+                        _buildLegendBox('#40c463'),
                         const SizedBox(width: 4),
-                        _buildLegendBox(3),
+                        _buildLegendBox('#30a14e'),
+                        const SizedBox(width: 4),
+                        _buildLegendBox('#216e39'),
                         const SizedBox(width: 6),
                         Text('More', style: AppTypography.bodySmall),
                       ],
@@ -243,16 +177,16 @@ class _GitHubSectionState extends State<GitHubSection>
                   return isWide
                       ? Row(
                           children: [
-                            Expanded(child: _buildCommitsStatsCard()),
+                            Expanded(child: _buildCommitsStatsCard(heatmapAsync, repoStatsAsync)),
                             const SizedBox(width: AppSpacing.md),
-                            Expanded(child: _buildLanguagesStatsCard()),
+                            Expanded(child: _buildLanguagesStatsCard(repoStatsAsync)),
                           ],
                         )
                       : Column(
                           children: [
-                            _buildCommitsStatsCard(),
+                            _buildCommitsStatsCard(heatmapAsync, repoStatsAsync),
                             const SizedBox(height: AppSpacing.md),
-                            _buildLanguagesStatsCard(),
+                            _buildLanguagesStatsCard(repoStatsAsync),
                           ],
                         );
                 },
@@ -264,19 +198,108 @@ class _GitHubSectionState extends State<GitHubSection>
     );
   }
 
-  Widget _buildLegendBox(int level) {
+  Widget _buildHeatmapGrid(List<dynamic> weeks) {
+    return SingleChildScrollView(
+      scrollDirection: Axis.horizontal,
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          // Weekdays labels column
+          Column(
+            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+            children: const [
+              Text('Mon', style: TextStyle(color: AppColors.textSecondary, fontSize: 10)),
+              SizedBox(height: 12),
+              Text('Wed', style: TextStyle(color: AppColors.textSecondary, fontSize: 10)),
+              SizedBox(height: 12),
+              Text('Fri', style: TextStyle(color: AppColors.textSecondary, fontSize: 10)),
+            ],
+          ),
+          const SizedBox(width: 12),
+          // Heatmap grid using AnimatedBuilder
+          AnimatedBuilder(
+            animation: _animationController,
+            builder: (context, child) {
+              return Row(
+                children: List.generate(weeks.length, (colIndex) {
+                  final days = weeks[colIndex];
+                  return Padding(
+                    padding: const EdgeInsets.only(right: 3.5),
+                    child: Column(
+                      children: List.generate(days.length, (rowIndex) {
+                        final day = days[rowIndex];
+                        final hexColor = day.color;
+                        
+                        // Calculate animated size / color factors
+                        final delayFactor = (colIndex + rowIndex) / (weeks.length + 7);
+                        final scale = Tween<double>(begin: 0.0, end: 1.0)
+                            .animate(
+                              CurvedAnimation(
+                                parent: _animationController,
+                                curve: Interval(
+                                  (delayFactor * 0.7).clamp(0.0, 1.0),
+                                  (delayFactor * 0.7 + 0.3).clamp(0.0, 1.0),
+                                  curve: Curves.easeOutBack,
+                                ),
+                              ),
+                            )
+                            .value;
+
+                        // Dark mode adjustments for GitHub's light default colors
+                        Color cellColor = _hexToColor(hexColor);
+                        if (hexColor.toLowerCase() == '#ebedf0') {
+                           cellColor = AppColors.border.withValues(alpha: 0.3);
+                        } else {
+                           // For dark mode, we might want to blend the light colors 
+                           // with cyan to match the theme if they are just standard GitHub green.
+                           // Actually the Deno API returns standard github colors. Let's tint them cyan!
+                           if (hexColor == '#9be9a8') cellColor = AppColors.accentCyan.withValues(alpha: 0.3);
+                           else if (hexColor == '#40c463') cellColor = AppColors.accentCyan.withValues(alpha: 0.5);
+                           else if (hexColor == '#30a14e') cellColor = AppColors.accentCyan.withValues(alpha: 0.7);
+                           else if (hexColor == '#216e39') cellColor = AppColors.accentCyan.withValues(alpha: 0.9);
+                        }
+
+                        return Container(
+                          width: 10 * scale,
+                          height: 10 * scale,
+                          margin: const EdgeInsets.only(bottom: 3.5),
+                          decoration: BoxDecoration(
+                            color: cellColor,
+                            borderRadius: BorderRadius.circular(2),
+                          ),
+                        );
+                      }),
+                    ),
+                  );
+                }),
+              );
+            },
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildLegendBox(String hexColor) {
+    Color cellColor = _hexToColor(hexColor);
+    if (hexColor.toLowerCase() == '#ebedf0') cellColor = AppColors.border.withValues(alpha: 0.3);
+    else if (hexColor == '#9be9a8') cellColor = AppColors.accentCyan.withValues(alpha: 0.3);
+    else if (hexColor == '#40c463') cellColor = AppColors.accentCyan.withValues(alpha: 0.5);
+    else if (hexColor == '#30a14e') cellColor = AppColors.accentCyan.withValues(alpha: 0.7);
+    else if (hexColor == '#216e39') cellColor = AppColors.accentCyan.withValues(alpha: 0.9);
+
     return Container(
       width: 10,
       height: 10,
       decoration: BoxDecoration(
-        color: _getContributionColor(level),
+        color: cellColor,
         borderRadius: BorderRadius.circular(2),
       ),
     );
   }
 
   // Animated Commits & PRs Stats Card
-  Widget _buildCommitsStatsCard() {
+  Widget _buildCommitsStatsCard(AsyncValue heatmapAsync, AsyncValue repoStatsAsync) {
     return BentoCard(
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -296,18 +319,45 @@ class _GitHubSectionState extends State<GitHubSection>
             ],
           ),
           const SizedBox(height: 24),
-          _buildStatRow('Total Commits (2025)', '800+', 0.85),
-          const SizedBox(height: 16),
-          _buildStatRow('Pull Requests', '50+', 0.65),
-          const SizedBox(height: 16),
-          _buildStatRow('Repositories Contributed', '18', 0.50),
+          
+          // Total Contributions
+          heatmapAsync.when(
+            data: (data) => Padding(
+              padding: const EdgeInsets.only(bottom: 16),
+              child: _buildStatRow('Total Contributions', '${data.totalContributions}', (data.totalContributions / 500).clamp(0.0, 1.0)),
+            ),
+            loading: () => const Padding(
+              padding: EdgeInsets.only(bottom: 16),
+              child: SizedBox(height: 20, width: double.infinity, child: LinearProgressIndicator(color: AppColors.accentCyan)),
+            ),
+            error: (_, __) => const SizedBox(),
+          ),
+
+          // Pull requests (still static for now, or removed if you prefer, leaving static)
+          Padding(
+            padding: const EdgeInsets.only(bottom: 16),
+            child: _buildStatRow('Pull Requests', PortfolioData.githubStats['Pull Requests']?['value'] ?? '50+', PortfolioData.githubStats['Pull Requests']?['percent'] ?? 0.65),
+          ),
+
+          // Repositories
+          repoStatsAsync.when(
+            data: (data) => Padding(
+              padding: const EdgeInsets.only(bottom: 16),
+              child: _buildStatRow('Public Repositories', '${data.totalRepos}', (data.totalRepos / 50).clamp(0.0, 1.0)),
+            ),
+            loading: () => const Padding(
+              padding: EdgeInsets.only(bottom: 16),
+              child: SizedBox(height: 20, width: double.infinity, child: LinearProgressIndicator(color: AppColors.accentCyan)),
+            ),
+            error: (_, __) => const SizedBox(),
+          ),
         ],
       ),
     );
   }
 
   // Languages Stats Card
-  Widget _buildLanguagesStatsCard() {
+  Widget _buildLanguagesStatsCard(AsyncValue repoStatsAsync) {
     return BentoCard(
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -327,11 +377,30 @@ class _GitHubSectionState extends State<GitHubSection>
             ],
           ),
           const SizedBox(height: 24),
-          _buildStatRow('Dart & Flutter', '74.2%', 0.74, color: AppColors.accentCyan),
-          const SizedBox(height: 16),
-          _buildStatRow('C++', '18.5%', 0.18, color: AppColors.accentViolet),
-          const SizedBox(height: 16),
-          _buildStatRow('Python', '7.3%', 0.07, color: Colors.orangeAccent),
+          
+          repoStatsAsync.when(
+            data: (data) {
+              final langs = data.topLanguages;
+              if (langs.isEmpty) {
+                return Text('No languages found', style: AppTypography.bodySmall.copyWith(color: AppColors.textSecondary));
+              }
+              return Column(
+                children: langs.entries.map<Widget> ((e) {
+                  return Padding(
+                    padding: const EdgeInsets.only(bottom: 16),
+                    child: _buildStatRow(
+                      e.key, 
+                      e.value['value'], 
+                      e.value['percent'], 
+                      color: Color(int.parse(e.value['color'])),
+                    ),
+                  );
+                }).toList(),
+              );
+            },
+            loading: () => const SizedBox(height: 100, child: Center(child: CircularProgressIndicator(color: AppColors.accentCyan))),
+            error: (_, __) => const Text('Error loading languages'),
+          ),
         ],
       ),
     );

@@ -133,7 +133,6 @@ class _BentoHeroSectionState extends State<BentoHeroSection>
             'Mobile Engineer.',
             'Clean Arch Enthusiast.',
             'UI Craftsperson.',
-            'Riverpod Aficionado.',
           ],
           style: AppTypography.displayLarge.copyWith(
             color: AppColors.accentCyan,

@@ -9,8 +9,7 @@ import 'widgets/skills_section.dart';
 import 'widgets/experience_section.dart';
 import 'widgets/projects_section.dart';
 import 'widgets/github_section.dart';
-import 'widgets/achievements_section.dart';
-import 'widgets/blog_section.dart';
+
 import 'widgets/contact_section.dart';
 
 class HomePage extends StatefulWidget {
@@ -49,25 +48,37 @@ class _HomePageState extends State<HomePage> {
           Positioned(
             top: -120,
             left: -100,
-            child: _GlowOrb(
-              size: 500,
-              color: AppColors.accentViolet.withValues(alpha: 0.10),
+            child: RepaintBoundary(
+              child: IgnorePointer(
+                child: _GlowOrb(
+                  size: 500,
+                  color: AppColors.accentViolet.withValues(alpha: 0.10),
+                ),
+              ),
             ),
           ),
           Positioned(
             top: 200,
             right: -150,
-            child: _GlowOrb(
-              size: 420,
-              color: AppColors.accentCyan.withValues(alpha: 0.07),
+            child: RepaintBoundary(
+              child: IgnorePointer(
+                child: _GlowOrb(
+                  size: 420,
+                  color: AppColors.accentCyan.withValues(alpha: 0.07),
+                ),
+              ),
             ),
           ),
           Positioned(
             bottom: 300,
             left: -80,
-            child: _GlowOrb(
-              size: 360,
-              color: AppColors.accentCyan.withValues(alpha: 0.05),
+            child: RepaintBoundary(
+              child: IgnorePointer(
+                child: _GlowOrb(
+                  size: 360,
+                  color: AppColors.accentCyan.withValues(alpha: 0.05),
+                ),
+              ),
             ),
           ),
 
@@ -89,54 +100,46 @@ class _HomePageState extends State<HomePage> {
               Expanded(
                 child: SingleChildScrollView(
                   controller: _scrollController,
+                  physics: const BouncingScrollPhysics(
+                    parent: AlwaysScrollableScrollPhysics(),
+                  ),
                   child: Column(
                     children: [
                       // Bento Hero (replaces old HeroSection + AboutSection)
                       SizedBox(
                         key: _sectionKeys[0],
-                        child: const BentoHeroSection(),
+                        child: const RepaintBoundary(child: BentoHeroSection()),
                       ),
 
                       // Skills
                       SizedBox(
                         key: _sectionKeys[2],
-                        child: const SkillsSection(),
+                        child: const RepaintBoundary(child: SkillsSection()),
                       ),
 
                       // Experience
                       SizedBox(
                         key: _sectionKeys[3],
-                        child: const ExperienceSection(),
+                        child: const RepaintBoundary(child: ExperienceSection()),
                       ),
 
                       // Projects
                       SizedBox(
                         key: _sectionKeys[4],
-                        child: const ProjectsSection(),
+                        child: const RepaintBoundary(child: ProjectsSection()),
                       ),
 
                       // GitHub
                       SizedBox(
                         key: _sectionKeys[5],
-                        child: const GitHubSection(),
+                        child: const RepaintBoundary(child: GitHubSection()),
                       ),
 
-                      // Achievements
-                      SizedBox(
-                        key: _sectionKeys[6],
-                        child: const AchievementsSection(),
-                      ),
-
-                      // Blog
-                      SizedBox(
-                        key: _sectionKeys[7],
-                        child: const BlogSection(),
-                      ),
 
                       // Contact
                       SizedBox(
                         key: _sectionKeys[8],
-                        child: const ContactSection(),
+                        child: const RepaintBoundary(child: ContactSection()),
                       ),
 
                       // Footer

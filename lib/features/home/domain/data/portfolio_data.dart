@@ -242,4 +242,20 @@ class PortfolioData {
       'detail': 'Decoding Visuals — AI for visually impaired users',
     },
   ];
+
+  // ── GITHUB STATS ─────────────────────────────────────────────────────────
+
+  static const String githubUsername = 'sakshiv3107';
+
+  static const Map<String, dynamic> githubStats = {
+    'Total Commits (2025)': {'value': '800+', 'percent': 0.85},
+    'Pull Requests': {'value': '50+', 'percent': 0.65},
+    'Repositories Contributed': {'value': '18', 'percent': 0.50},
+  };
+
+  static const Map<String, dynamic> topLanguages = {
+    'Dart & Flutter': {'value': '74.2%', 'percent': 0.74, 'color': '0xFF00E5FF'},
+    'C++': {'value': '18.5%', 'percent': 0.18, 'color': '0xFF8B5CF6'},
+    'Python': {'value': '7.3%', 'percent': 0.07, 'color': '0xFFFF9800'},
+  };
 }

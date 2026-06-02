@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:visibility_detector/visibility_detector.dart';
 
 /// Scroll-triggered fade + slide-up reveal wrapper (Animation 3)
+/// Fixed: UniqueKey() was being created in build() causing detector re-registration
+/// on every rebuild. Now uses a stable key passed in or derived from widget.key.
 class ScrollReveal extends StatefulWidget {
   final Widget child;
   final Duration delay;
@@ -12,8 +14,8 @@ class ScrollReveal extends StatefulWidget {
     super.key,
     required this.child,
     this.delay = Duration.zero,
-    this.duration = const Duration(milliseconds: 500),
-    this.slideOffset = 30.0,
+    this.duration = const Duration(milliseconds: 600),
+    this.slideOffset = 24.0,
   });
 
   @override
@@ -54,10 +56,12 @@ class _ScrollRevealState extends State<ScrollReveal>
 
   @override
   Widget build(BuildContext context) {
+    // Use the widget's own key (stable) instead of UniqueKey() which recreates every build
+    final visibilityKey = widget.key ?? ValueKey(widget.hashCode);
     return VisibilityDetector(
-      key: widget.key ?? UniqueKey(),
+      key: visibilityKey,
       onVisibilityChanged: (info) {
-        if (info.visibleFraction > 0.1) _trigger();
+        if (info.visibleFraction > 0.05) _trigger();
       },
       child: FadeTransition(
         opacity: _fade,

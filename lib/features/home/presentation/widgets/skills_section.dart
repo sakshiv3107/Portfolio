@@ -66,8 +66,6 @@ class _SkillCategory extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final skills = PortfolioData.skillsByCategory(category);
-    // Use marquee for all categories
-    final useMarquee = true;
 
     return Padding(
       padding: const EdgeInsets.only(bottom: AppSpacing.xxl),
@@ -96,24 +94,17 @@ class _SkillCategory extends StatelessWidget {
             ],
           ),
           const SizedBox(height: AppSpacing.md),
-
-          // Badges: marquee if many, wrap if few
-          if (useMarquee)
-            SizedBox(
-              height: 44,
-              child: InfiniteMarquee(
-                key: ValueKey('marquee-$category'),
-                speed: 38.0,
-                gap: 10.0,
-                children: skills.map((s) => TechBadge(skill: s)).toList(),
-              ),
-            )
-          else
-            Wrap(
-              spacing: AppSpacing.sm,
-              runSpacing: AppSpacing.sm,
-              children: skills.map((skill) => TechBadge(skill: skill)).toList(),
+          SizedBox(
+            height: 44,
+            child: InfiniteMarquee(
+              key: ValueKey('marquee-$category'),
+              speed: 38.0,
+              gap: 10.0,
+              children: skills
+                  .map<Widget>((s) => TechBadge(skill: s))
+                  .toList(),
             ),
+          ),
         ],
       ),
     );
