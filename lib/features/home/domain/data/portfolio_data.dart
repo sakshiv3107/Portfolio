@@ -155,42 +155,48 @@ class PortfolioData {
 
   // ── EXPERIENCE ───────────────────────────────────────────────────────────
 
-  static const List<Experience> experiences = [
-    Experience(
+  static const List<ExperienceItem> experiences = [
+    ExperienceItem(
       role: 'Social Media Head',
-      organization: 'GDG ABESEC (Google Developer Groups)',
-      period: 'Nov 2024 – Present',
+      company: 'GDG ABESEC (Google Developer Groups)',
+      companyUrl: 'https://gdg.community.dev/',
+      dateRange: 'Nov 2024 – Present',
+      isCurrent: true,
+      description:
+          'Lead social strategy and technical content for the Google Developer Group chapter — growing reach, designing campaigns, and coordinating event communications.',
       bullets: [
         'Manage social media presence and technical content for the chapter',
         'Design promotional graphics and event campaigns in Figma',
         'Coordinate with speakers and organizers for tech events',
       ],
-      technologies: ['Figma', 'Canva', 'Content Strategy'],
-      isCurrent: true,
     ),
-    Experience(
+    ExperienceItem(
       role: 'Graphics Lead',
-      organization: 'CodeChef ABESEC Chapter',
-      period: 'Oct 2024 – Present',
+      company: 'CodeChef ABESEC Chapter',
+      companyUrl: 'https://www.codechef.com/',
+      dateRange: 'Oct 2024 – Present',
+      isCurrent: true,
+      description:
+          'Own visual identity and creative assets for competitive programming events, workshops, and recruitment drives across the chapter.',
       bullets: [
         'Create visual assets for contests, workshops, and recruitment drives',
         'Collaborate with technical team to align design with event branding',
         'Maintain consistent brand identity across all chapter communications',
       ],
-      technologies: ['Figma', 'Adobe', 'Graphic Design'],
-      isCurrent: true,
     ),
-    Experience(
+    ExperienceItem(
       role: 'B.Tech Information Technology',
-      organization: 'ABES Engineering College, Ghaziabad',
-      period: '2023 – July 2027',
+      company: 'ABES Engineering College, Ghaziabad',
+      companyUrl: 'https://abes.ac.in/',
+      dateRange: '2023 – July 2027',
+      isCurrent: true,
+      description:
+          'Pursuing a B.Tech in IT with strong academic performance and active involvement in developer communities, DSA, and mobile development.',
       bullets: [
         'CGPA: 9.0 — consistently in top academic standing',
         'Active in competitive programming — LeetCode 400+ problems, rating ~1550+',
         'Core member of multiple developer and design clubs',
       ],
-      technologies: ['C++', 'DSA', 'Flutter', 'Dart', 'Networking'],
-      isCurrent: true,
     ),
   ];
 

@@ -28,11 +28,14 @@ class _CountUpTextState extends State<CountUpText>
     with SingleTickerProviderStateMixin {
   late AnimationController _ctrl;
   late Animation<double> _anim;
+  late Key _visibilityKey;
   bool _started = false;
 
   @override
   void initState() {
     super.initState();
+    _visibilityKey = widget.key ??
+        ValueKey('count_${widget.end}_${widget.prefix}_${widget.suffix}');
     _ctrl = AnimationController(vsync: this, duration: widget.duration);
     _anim = Tween<double>(begin: 0, end: widget.end)
         .animate(CurvedAnimation(parent: _ctrl, curve: Curves.easeOut));
@@ -47,7 +50,7 @@ class _CountUpTextState extends State<CountUpText>
   @override
   Widget build(BuildContext context) {
     return VisibilityDetector(
-      key: widget.key ?? UniqueKey(),
+      key: _visibilityKey,
       onVisibilityChanged: (info) {
         if (info.visibleFraction > 0.3 && !_started) {
           _started = true;

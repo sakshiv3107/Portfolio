@@ -1,15 +1,24 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:url_launcher/url_launcher.dart';
 import '../../../../core/constants/app_colors.dart';
 import '../../../../core/constants/app_spacing.dart';
 import '../../../../core/constants/app_typography.dart';
 import '../../../../core/utils/responsive.dart';
+import '../../../../core/utils/resume_launcher.dart';
 import '../../../../shared/widgets/bento_card.dart';
+import '../../../../shared/widgets/count_up_text.dart';
+import '../../../../shared/widgets/portfolio_avatar.dart';
 import '../../../../shared/widgets/rolling_text.dart';
+import '../../../../shared/widgets/tech_badge.dart';
+import '../../domain/data/portfolio_data.dart';
+import '../../domain/models/skill.dart';
 
 class BentoHeroSection extends StatefulWidget {
-  const BentoHeroSection({super.key});
+  final VoidCallback? onViewProjects;
+
+  const BentoHeroSection({super.key, this.onViewProjects});
 
   @override
   State<BentoHeroSection> createState() => _BentoHeroSectionState();
@@ -20,7 +29,6 @@ class _BentoHeroSectionState extends State<BentoHeroSection>
   late AnimationController _fadeController;
   late Animation<double> _fadeAnim;
 
-  // Staggered items animations
   late List<AnimationController> _itemControllers;
   late List<Animation<double>> _itemOpacities;
   late List<Animation<Offset>> _itemSlides;
@@ -37,7 +45,7 @@ class _BentoHeroSectionState extends State<BentoHeroSection>
     );
 
     _itemControllers = List.generate(
-      4,
+      3,
       (i) => AnimationController(
         vsync: this,
         duration: const Duration(milliseconds: 600),
@@ -45,19 +53,26 @@ class _BentoHeroSectionState extends State<BentoHeroSection>
     );
 
     _itemOpacities = _itemControllers
-        .map((c) => Tween<double>(begin: 0, end: 1).animate(
-              CurvedAnimation(parent: c, curve: Curves.easeOut),
-            ))
+        .map(
+          (c) => Tween<double>(begin: 0, end: 1).animate(
+            CurvedAnimation(parent: c, curve: Curves.easeOut),
+          ),
+        )
         .toList();
 
     _itemSlides = _itemControllers
-        .map((c) => Tween<Offset>(begin: const Offset(0, 0.1), end: Offset.zero).animate(
-              CurvedAnimation(parent: c, curve: Curves.easeOutCubic),
-            ))
+        .map(
+          (c) => Tween<Offset>(
+            begin: const Offset(0, 0.1),
+            end: Offset.zero,
+          ).animate(
+            CurvedAnimation(parent: c, curve: Curves.easeOutCubic),
+          ),
+        )
         .toList();
 
     _fadeController.forward();
-    for (int i = 0; i < 4; i++) {
+    for (int i = 0; i < 3; i++) {
       Future.delayed(Duration(milliseconds: 150 + i * 150), () {
         if (mounted) _itemControllers[i].forward();
       });
@@ -83,28 +98,36 @@ class _BentoHeroSectionState extends State<BentoHeroSection>
   @override
   Widget build(BuildContext context) {
     final isDesktop = Responsive.isDesktop(context);
+    final isMobile = Responsive.isMobile(context);
 
     return Container(
       width: double.infinity,
+      color: AppColors.background,
       padding: EdgeInsets.symmetric(
         horizontal: Responsive.horizontalPadding(context),
         vertical: AppSpacing.section,
       ),
       child: Center(
         child: ConstrainedBox(
-          constraints: const BoxConstraints(maxWidth: AppSpacing.maxContentWidth),
+          constraints:
+              const BoxConstraints(maxWidth: AppSpacing.maxContentWidth),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              // 1. Sleek Intro Header Block
               FadeTransition(
                 opacity: _fadeAnim,
                 child: _buildIntroHeader(context),
               ),
-              const SizedBox(height: AppSpacing.xxl),
-
-              // 2. Responsive Bento Grid Layout
-              isDesktop ? _buildDesktopGrid() : _buildMobileStack(),
+              SizedBox(height: isMobile ? AppSpacing.xl : AppSpacing.xxl),
+              if (isDesktop)
+                _buildStaggeredCard(0, _buildBentoRow())
+              else ...[
+                _buildStaggeredCard(0, _buildAboutCard()),
+                const SizedBox(height: AppSpacing.lg),
+                _buildStaggeredCard(1, _buildConnectCard()),
+              ],
+              const SizedBox(height: AppSpacing.lg),
+              _buildStaggeredCard(isDesktop ? 1 : 2, _buildStatsBar()),
             ],
           ),
         ),
@@ -112,21 +135,47 @@ class _BentoHeroSectionState extends State<BentoHeroSection>
     );
   }
 
-  // Header Block with Rolling tagline and Pulsing Dot indicator
   Widget _buildIntroHeader(BuildContext context) {
+    final isMobile = Responsive.isMobile(context);
+
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        // Static greeting line
+        Wrap(
+          spacing: 10,
+          runSpacing: 10,
+          children: const [
+            _StatusPill(
+              child: Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  _PulsingDot(),
+                  SizedBox(width: 8),
+                  Text(
+                    'Available for Internships',
+                    style: TextStyle(
+                      color: AppColors.success,
+                      fontSize: 12,
+                      fontWeight: FontWeight.w600,
+                    ),
+                  ),
+                ],
+              ),
+              borderColor: AppColors.success,
+              backgroundColor: Color(0x1410B981),
+            ),
+          ],
+        ),
+        SizedBox(height: isMobile ? AppSpacing.lg : AppSpacing.xl),
         Text(
           "Hi, I'm Sakshi —",
           style: AppTypography.displayLarge.copyWith(
             fontWeight: FontWeight.w800,
-            height: 1.15,
+            height: 1.12,
+            fontSize: isMobile ? 32 : 44,
           ),
         ),
         const SizedBox(height: 6),
-        // Rolling slot-machine tagline
         RollingText(
           texts: const [
             'Flutter Developer.',
@@ -137,22 +186,36 @@ class _BentoHeroSectionState extends State<BentoHeroSection>
           style: AppTypography.displayLarge.copyWith(
             color: AppColors.accentCyan,
             fontWeight: FontWeight.w700,
-            height: 1.15,
+            height: 1.12,
+            fontSize: isMobile ? 32 : 44,
           ),
           switchInterval: const Duration(seconds: 2),
           animDuration: const Duration(milliseconds: 420),
         ),
         const SizedBox(height: AppSpacing.lg),
-        Row(
+        Text(
+          'Turning ideas into beautiful, responsive apps where thoughtful design meets clean code.',
+          style: AppTypography.bodyLarge.copyWith(
+            color: AppColors.textSecondary,
+            height: 1.6,
+            fontSize: isMobile ? 15 : 17,
+          ),
+        ),
+        const SizedBox(height: AppSpacing.xl),
+        Wrap(
+          spacing: 12,
+          runSpacing: 12,
           children: [
-            const _PulsingDot(),
-            const SizedBox(width: 8),
-            Text(
-              'Available for Internships · Summer / Fall 2025',
-              style: AppTypography.bodySmall.copyWith(
-                color: AppColors.success,
-                fontWeight: FontWeight.w600,
-              ),
+            _HeroOutlinedButton(
+              label: "Let's Connect",
+              icon: Icons.arrow_outward_rounded,
+              accent: true,
+              onPressed: () =>
+                  _launchUrl('mailto:sakshi.vishnoi3107@gmail.com'),
+            ),
+            _HeroOutlinedButton(
+              label: 'View Projects',
+              onPressed: widget.onViewProjects,
             ),
           ],
         ),
@@ -160,59 +223,13 @@ class _BentoHeroSectionState extends State<BentoHeroSection>
     );
   }
 
-  // Desktop Bento Layout (Column nesting for perfect 3-column height-match)
-  Widget _buildDesktopGrid() {
+  Widget _buildBentoRow() {
     return Row(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        // Left Column (spans 2/3 of desktop width)
-        Expanded(
-          flex: 2,
-          child: Column(
-            children: [
-              // Card 1: About Me
-              _buildStaggeredCard(0, _buildAboutCard()),
-              const SizedBox(height: AppSpacing.lg),
-              // Sub-row containing Card 3 (Location) and Card 4 (Social Grid)
-              Row(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Expanded(
-                    child: _buildStaggeredCard(2, _buildLocationCard(height: 220)),
-                  ),
-                  const SizedBox(width: AppSpacing.lg),
-                  Expanded(
-                    child: _buildStaggeredCard(3, _buildSocialsCard(height: 220)),
-                  ),
-                ],
-              ),
-            ],
-          ),
-        ),
+        Expanded(flex: 3, child: _buildAboutCard()),
         const SizedBox(width: AppSpacing.lg),
-        // Right Column (spans 1/3 of desktop width, equal height to the left column contents)
-        Expanded(
-          flex: 1,
-          child: SizedBox(
-            height: 480, // matches height of Card 1 (240) + Spacing (20) + Card 3/4 (220)
-            child: _buildStaggeredCard(1, _buildSkillsCard()),
-          ),
-        ),
-      ],
-    );
-  }
-
-  // Mobile / Tablet Bento Layout (stacks vertically)
-  Widget _buildMobileStack() {
-    return Column(
-      children: [
-        _buildStaggeredCard(0, _buildAboutCard()),
-        const SizedBox(height: AppSpacing.lg),
-        _buildStaggeredCard(1, _buildSkillsCard()),
-        const SizedBox(height: AppSpacing.lg),
-        _buildStaggeredCard(2, _buildLocationCard(height: 200)),
-        const SizedBox(height: AppSpacing.lg),
-        _buildStaggeredCard(3, _buildSocialsCard(height: 200)),
+        Expanded(flex: 2, child: _buildConnectCard()),
       ],
     );
   }
@@ -227,96 +244,24 @@ class _BentoHeroSectionState extends State<BentoHeroSection>
     );
   }
 
-  // ── BENTO CARD 1: ABOUT ME ──────────────────────────────────────────────────
-  Widget _buildAboutCard() {
-    final isMobile = Responsive.isMobile(context);
-
-    return BentoCard(
-      height: isMobile ? null : 240,
-      padding: const EdgeInsets.symmetric(horizontal: 28, vertical: 24),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
+  Widget _sectionLabel(String index, String title) {
+    return Text.rich(
+      TextSpan(
         children: [
-          Row(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              // Modern rounded square avatar container
-              Container(
-                width: 72,
-                height: 72,
-                decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(16),
-                  color: AppColors.surfaceElevated,
-                  border: Border.all(
-                    color: AppColors.border.withValues(alpha: 0.5),
-                  ),
-                  boxShadow: [
-                    BoxShadow(
-                      color: Colors.black.withValues(alpha: 0.1),
-                      blurRadius: 10,
-                    ),
-                  ],
-                ),
-                child: Center(
-                  child: Text(
-                    'SV',
-                    style: AppTypography.titleMedium.copyWith(
-                      color: AppColors.accentCyan,
-                      fontWeight: FontWeight.bold,
-                      fontSize: 22,
-                    ),
-                  ),
-                ),
-              ),
-              const SizedBox(width: 20),
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      'About me.',
-                      style: AppTypography.headlineSmall.copyWith(
-                        fontWeight: FontWeight.w800,
-                      ),
-                    ),
-                    const SizedBox(height: 4),
-                    Text(
-                      'B.Tech Information Technology Student',
-                      style: AppTypography.labelLarge.copyWith(
-                        color: AppColors.accentCyan,
-                        fontSize: 13,
-                        fontWeight: FontWeight.w600,
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-            ],
-          ),
-          const SizedBox(height: 16),
-          Expanded(
-            child: Text(
-              'I build clean, production-ready mobile and web applications with Flutter and Dart, focusing on robust architectures (Clean Architecture + Riverpod) and smooth visual experiences.',
-              style: AppTypography.bodyMedium.copyWith(
-                height: 1.5,
-              ),
-              maxLines: isMobile ? null : 3,
-              overflow: isMobile ? null : TextOverflow.ellipsis,
+          TextSpan(
+            text: '[ $index ] ',
+            style: AppTypography.overline.copyWith(
+              color: AppColors.textMuted,
+              fontSize: 11,
+              letterSpacing: 1.4,
             ),
           ),
-          const SizedBox(height: 12),
-          Align(
-            alignment: Alignment.bottomLeft,
-            child: ElevatedButton.icon(
-              onPressed: () => _launchUrl('mailto:sakshi.vishnoi3107@gmail.com'),
-              icon: const Icon(Icons.arrow_outward_rounded, size: 16),
-              label: const Text("Let's Connect"),
-              style: ElevatedButton.styleFrom(
-                padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(12),
-                ),
-              ),
+          TextSpan(
+            text: title,
+            style: AppTypography.overline.copyWith(
+              color: AppColors.textMuted,
+              fontSize: 11,
+              letterSpacing: 1.4,
             ),
           ),
         ],
@@ -324,189 +269,100 @@ class _BentoHeroSectionState extends State<BentoHeroSection>
     );
   }
 
-  // ── BENTO CARD 2: SKILLS & STACK ────────────────────────────────────────────
-  Widget _buildSkillsCard() {
-    final categories = [
-      ('Mobile', ['Flutter', 'Dart', 'Android', 'iOS']),
-      ('State / DB', ['Riverpod', 'Firebase', 'Supabase']),
-      ('AI & APIs', ['Gemini API', 'REST API', 'GraphQL']),
-      ('Architecture', ['Clean Arch', 'MVVM', 'Git']),
+  Skill _aboutSkill(String name) => PortfolioData.skills.firstWhere(
+        (s) => s.name == name,
+        orElse: () => Skill(name: name, category: 'Mobile Development'),
+      );
+
+  Widget _buildAboutCard() {
+    final isDesktop = Responsive.isDesktop(context);
+    final avatarSize = isDesktop ? 88.0 : 72.0;
+
+    final aboutChips = [
+      _aboutSkill('Flutter'),
+      _aboutSkill('Dart'),
+      _aboutSkill('Riverpod'),
+      _aboutSkill('Firebase'),
+      _aboutSkill('Clean Architecture'),
     ];
 
     return BentoCard(
-      padding: const EdgeInsets.all(24),
+      padding: EdgeInsets.all(isDesktop ? 32 : 24),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
+        mainAxisSize: MainAxisSize.min,
         children: [
-          Row(
-            children: [
-              const Icon(
-                Icons.terminal_rounded,
-                color: AppColors.accentCyan,
-                size: 18,
-              ),
-              const SizedBox(width: 8),
-              Text(
-                'Skills & Stack',
-                style: AppTypography.labelLarge.copyWith(
-                  color: AppColors.textPrimary,
-                  fontWeight: FontWeight.bold,
-                  letterSpacing: 1.1,
-                ),
-              ),
-            ],
+          PortfolioAvatar(
+            size: avatarSize,
+            borderRadius: isDesktop ? 18 : 16,
           ),
-          const SizedBox(height: 16),
-          Expanded(
-            child: SingleChildScrollView(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: categories.map((cat) {
-                  return Padding(
-                    padding: const EdgeInsets.only(bottom: 14),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          cat.$1.toUpperCase(),
-                          style: AppTypography.overline.copyWith(
-                            color: AppColors.textMuted,
-                            fontSize: 9,
-                            letterSpacing: 1.2,
-                          ),
-                        ),
-                        const SizedBox(height: 6),
-                        Wrap(
-                          spacing: 6,
-                          runSpacing: 6,
-                          children: cat.$2.map((skill) {
-                            return Container(
-                              padding: const EdgeInsets.symmetric(
-                                horizontal: 10,
-                                vertical: 5,
-                              ),
-                              decoration: BoxDecoration(
-                                color: AppColors.background.withValues(alpha: 0.5),
-                                borderRadius: BorderRadius.circular(8),
-                                border: Border.all(
-                                  color: AppColors.border.withValues(alpha: 0.5),
-                                ),
-                              ),
-                              child: Text(
-                                skill,
-                                style: AppTypography.bodySmall.copyWith(
-                                  fontSize: 11,
-                                  color: AppColors.textSecondary,
-                                  fontWeight: FontWeight.w500,
-                                ),
-                              ),
-                            );
-                          }).toList(),
-                        ),
-                      ],
-                    ),
-                  );
-                }).toList(),
-              ),
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-
-  // ── BENTO CARD 3: LOCATION (With pulsing radar map element) ─────────────────
-  Widget _buildLocationCard({required double height}) {
-    return BentoCard(
-      height: height,
-      padding: EdgeInsets.zero,
-      child: Stack(
-        children: [
-          // Simulated Radar Background Grid
-          Positioned.fill(
-            child: Opacity(
-              opacity: 0.12,
-              child: CustomPaint(
-                painter: _RadarBackgroundPainter(),
-              ),
-            ),
-          ),
-          // Pulsing Map pin marker centered
-          Positioned(
-            top: 0,
-            left: 0,
-            right: 0,
-            bottom: 60,
-            child: Center(
-              child: Stack(
-                alignment: Alignment.center,
-                children: [
-                  const _PulsingCircle(radius: 64, color: AppColors.accentCyan),
-                  const _PulsingCircle(radius: 36, color: AppColors.accentCyan),
-                  Container(
-                    width: 14,
-                    height: 14,
-                    decoration: const BoxDecoration(
-                      color: AppColors.accentCyan,
-                      shape: BoxShape.circle,
-                    ),
-                  ),
-                ],
-              ),
-            ),
-          ),
-          // Location text anchored at the bottom
-          Positioned(
-            bottom: 16,
-            left: 20,
-            right: 20,
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  'Ghaziabad, India',
-                  style: AppTypography.labelLarge.copyWith(
-                    fontWeight: FontWeight.bold,
-                    color: AppColors.textPrimary,
-                  ),
-                ),
-                Text(
-                  'GMT +5:30 (Asia/Kolkata)',
-                  style: AppTypography.bodySmall.copyWith(
-                    color: AppColors.textMuted,
-                    fontSize: 11,
-                  ),
-                ),
-              ],
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-
-  // ── BENTO CARD 4: SOCIALS GRID (2x2 flat grid) ──────────────────────────────
-  Widget _buildSocialsCard({required double height}) {
-    return BentoCard(
-      height: height,
-      padding: const EdgeInsets.all(20),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
+          SizedBox(height: isDesktop ? 24 : 20),
           Text(
-            'CONNECT',
-            style: AppTypography.overline.copyWith(
-              color: AppColors.textMuted,
-              letterSpacing: 1.2,
+            'About me.',
+            style: AppTypography.headlineLarge.copyWith(
+              fontSize: isDesktop ? 30 : 26,
+              fontWeight: FontWeight.w800,
+              color: AppColors.textPrimary,
+              height: 1.2,
             ),
           ),
-          const SizedBox(height: 12),
-          Expanded(
+          SizedBox(height: isDesktop ? 20 : 16),
+          _AboutBioParagraph(chips: aboutChips, isDesktop: isDesktop),
+          SizedBox(height: isDesktop ? 28 : 24),
+          _AboutConnectButton(
+            onPressed: () =>
+                _launchUrl('mailto:sakshi.vishnoi3107@gmail.com'),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildConnectCard() {
+    final isDesktop = Responsive.isDesktop(context);
+
+    return BentoCard(
+      padding: EdgeInsets.all(isDesktop ? 24 : 20),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          _sectionLabel('02', 'CONNECT'),
+          const SizedBox(height: AppSpacing.lg),
+          _buildConnectGrid(isDesktop: isDesktop),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildConnectGrid({required bool isDesktop}) {
+    const gridSpacing = 10.0;
+    final maxCellSize = isDesktop ? 68.0 : 80.0;
+
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        final maxW = constraints.maxWidth;
+
+        final cellByWidth = (maxW - gridSpacing) / 2;
+        final cellSize = cellByWidth > maxCellSize ? maxCellSize : cellByWidth;
+
+        if (cellSize <= 0) {
+          return const SizedBox.shrink();
+        }
+
+        final gridExtent = cellSize * 2 + gridSpacing;
+
+        return Align(
+          alignment: Alignment.topLeft,
+          child: SizedBox(
+            width: gridExtent,
+            height: gridExtent,
             child: GridView.count(
               crossAxisCount: 2,
-              crossAxisSpacing: 10,
-              mainAxisSpacing: 10,
+              crossAxisSpacing: gridSpacing,
+              mainAxisSpacing: gridSpacing,
               physics: const NeverScrollableScrollPhysics(),
+              mainAxisExtent: cellSize,
               children: [
                 _buildSocialTile(
                   icon: FontAwesomeIcons.github,
@@ -519,25 +375,108 @@ class _BentoHeroSectionState extends State<BentoHeroSection>
                   label: 'LinkedIn',
                   color: const Color(0xFF0A66C2),
                   onTap: () => _launchUrl(
-                      'https://www.linkedin.com/in/sakshi-vishnoi-7770b2315/'),
-                ),
-                _buildSocialTile(
-                  icon: Icons.code_rounded,
-                  label: 'LeetCode',
-                  color: const Color(0xFFFFA116),
-                  onTap: () => _launchUrl('https://leetcode.com/u/sakshiv31/'),
+                    'https://www.linkedin.com/in/sakshi-vishnoi-7770b2315/',
+                  ),
                 ),
                 _buildSocialTile(
                   icon: Icons.email_outlined,
                   label: 'Email',
                   color: AppColors.accentCyan,
-                  onTap: () => _launchUrl('mailto:sakshi.vishnoi3107@gmail.com'),
+                  onTap: () =>
+                      _launchUrl('mailto:sakshi.vishnoi3107@gmail.com'),
+                ),
+                _buildSocialTile(
+                  icon: Icons.description_outlined,
+                  label: 'Resume',
+                  color: AppColors.accentViolet,
+                  onTap: launchResume,
                 ),
               ],
             ),
           ),
-        ],
+        );
+      },
+    );
+  }
+
+  Widget _buildStatsBar() {
+    final isMobile = Responsive.isMobile(context);
+    final projectCount = PortfolioData.projects.length;
+
+    final stats = [
+      _StatItem(
+        value: CountUpText(
+          end: 400,
+          suffix: '+',
+          style: AppTypography.headlineMedium.copyWith(
+            fontWeight: FontWeight.w800,
+          ),
+        ),
+        label: 'LEETCODE PROBLEMS',
       ),
+      _StatItem(
+        value: CountUpText(
+          end: 9.0,
+          decimals: 1,
+          style: AppTypography.headlineMedium.copyWith(
+            fontWeight: FontWeight.w800,
+            color: AppColors.accentCyan,
+          ),
+        ),
+        label: 'CGPA',
+      ),
+      _StatItem(
+        value: CountUpText(
+          end: projectCount.toDouble(),
+          suffix: '+',
+          style: AppTypography.headlineMedium.copyWith(
+            fontWeight: FontWeight.w800,
+          ),
+        ),
+        label: 'LIVE PROJECTS',
+      ),
+      _StatItem(
+        value: Text(
+          'Ghaziabad, IN',
+          style: AppTypography.titleMedium.copyWith(
+            fontWeight: FontWeight.w800,
+          ),
+        ),
+        label: 'GMT +5:30',
+      ),
+    ];
+
+    return BentoCard(
+      padding: EdgeInsets.symmetric(
+        vertical: isMobile ? 20 : 28,
+        horizontal: isMobile ? 12 : 8,
+      ),
+      child: isMobile
+          ? Column(
+              children: [
+                for (var i = 0; i < stats.length; i++) ...[
+                  if (i > 0)
+                    Divider(
+                      color: AppColors.border.withValues(alpha: 0.6),
+                      height: 28,
+                    ),
+                  stats[i],
+                ],
+              ],
+            )
+          : Row(
+              children: [
+                for (var i = 0; i < stats.length; i++) ...[
+                  if (i > 0)
+                    Container(
+                      width: 1,
+                      height: 56,
+                      color: AppColors.border.withValues(alpha: 0.7),
+                    ),
+                  Expanded(child: stats[i]),
+                ],
+              ],
+            ),
     );
   }
 
@@ -556,93 +495,289 @@ class _BentoHeroSectionState extends State<BentoHeroSection>
   }
 }
 
-// ── CUSTOM RADAR GRAPHIC PAINTER ──────────────────────────────────────────────
-class _RadarBackgroundPainter extends CustomPainter {
-  @override
-  void paint(Canvas canvas, Size size) {
-    final paint = Paint()
-      ..color = AppColors.accentCyan.withValues(alpha: 0.15)
-      ..style = PaintingStyle.stroke
-      ..strokeWidth = 1.0;
+class _StatItem extends StatelessWidget {
+  final Widget value;
+  final String label;
 
-    final center = Offset(size.width / 2, (size.height - 60) / 2);
-
-    // Draw concentric circles
-    canvas.drawCircle(center, 24, paint);
-    canvas.drawCircle(center, 54, paint);
-    canvas.drawCircle(center, 84, paint);
-
-    // Draw grid lines
-    canvas.drawLine(Offset(0, center.dy), Offset(size.width, center.dy), paint);
-    canvas.drawLine(Offset(center.dx, 0), Offset(center.dx, size.height - 60), paint);
-  }
-
-  @override
-  bool shouldRepaint(covariant CustomPainter oldDelegate) => false;
-}
-
-// ── PULSING ANCHOR RING ANIMATION ─────────────────────────────────────────────
-class _PulsingCircle extends StatefulWidget {
-  final double radius;
-  final Color color;
-
-  const _PulsingCircle({required this.radius, required this.color});
-
-  @override
-  State<_PulsingCircle> createState() => _PulsingCircleState();
-}
-
-class _PulsingCircleState extends State<_PulsingCircle>
-    with SingleTickerProviderStateMixin {
-  late AnimationController _ctrl;
-  late Animation<double> _scale;
-  late Animation<double> _opacity;
-
-  @override
-  void initState() {
-    super.initState();
-    _ctrl = AnimationController(
-      vsync: this,
-      duration: const Duration(milliseconds: 2400),
-    )..repeat();
-
-    _scale = Tween<double>(begin: 0.1, end: 1.0).animate(
-      CurvedAnimation(parent: _ctrl, curve: Curves.easeOutCirc),
-    );
-
-    _opacity = Tween<double>(begin: 0.5, end: 0.0).animate(
-      CurvedAnimation(parent: _ctrl, curve: Curves.easeOutExpo),
-    );
-  }
-
-  @override
-  void dispose() {
-    _ctrl.dispose();
-    super.dispose();
-  }
+  const _StatItem({required this.value, required this.label});
 
   @override
   Widget build(BuildContext context) {
-    return AnimatedBuilder(
-      animation: _ctrl,
-      builder: (context, child) {
-        return Opacity(
-          opacity: _opacity.value,
-          child: Container(
-            width: widget.radius * _scale.value,
-            height: widget.radius * _scale.value,
-            decoration: BoxDecoration(
-              shape: BoxShape.circle,
-              border: Border.all(color: widget.color, width: 1.5),
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          value,
+          const SizedBox(height: 6),
+          Text(
+            label,
+            textAlign: TextAlign.center,
+            style: AppTypography.overline.copyWith(
+              color: AppColors.textMuted,
+              fontSize: 10,
+              letterSpacing: 1.1,
             ),
           ),
-        );
-      },
+        ],
+      ),
     );
   }
 }
 
-// ── PULSING GREEN/INTERNSHIP DOT ──────────────────────────────────────────────
+class _StatusPill extends StatelessWidget {
+  final Widget? child;
+  final String? label;
+  final Color borderColor;
+  final Color backgroundColor;
+  final Color? labelColor;
+
+  const _StatusPill({
+    this.child,
+    this.label,
+    required this.borderColor,
+    required this.backgroundColor,
+    this.labelColor,
+  }) : assert(child != null || label != null);
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
+      decoration: BoxDecoration(
+        color: backgroundColor,
+        borderRadius: BorderRadius.circular(AppSpacing.pillRadius),
+        border: Border.all(color: borderColor.withValues(alpha: 0.45)),
+      ),
+      child: child ??
+          Text(
+            label!,
+            style: TextStyle(
+              color: labelColor ?? AppColors.textSecondary,
+              fontSize: 12,
+              fontWeight: FontWeight.w600,
+            ),
+          ),
+    );
+  }
+}
+
+class _AboutBioParagraph extends StatelessWidget {
+  final List<Skill> chips;
+  final bool isDesktop;
+
+  const _AboutBioParagraph({
+    required this.chips,
+    required this.isDesktop,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final base = AppTypography.bodyLarge.copyWith(
+      color: AppColors.textPrimary,
+      fontSize: isDesktop ? 16 : 15,
+      height: 1.65,
+      fontWeight: FontWeight.w400,
+    );
+    final bold = base.copyWith(fontWeight: FontWeight.w700);
+
+    return Wrap(
+      spacing: 6,
+      runSpacing: 10,
+      crossAxisAlignment: WrapCrossAlignment.center,
+      children: [
+        Text('I build production-ready ', style: base),
+        Text('mobile', style: bold),
+        Text(' and ', style: base),
+        Text('AI', style: bold),
+        Text(' apps using ', style: base),
+        for (var i = 0; i < chips.length; i++) ...[
+          _InlineTechChip(skill: chips[i], paletteIndex: i),
+        ],
+        Text(' — focused on clean UX and real user impact.', style: base),
+      ],
+    );
+  }
+}
+
+class _InlineTechChip extends StatelessWidget {
+  final Skill skill;
+  final int paletteIndex;
+
+  const _InlineTechChip({
+    required this.skill,
+    required this.paletteIndex,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final accent = skillAccentColor(skill, paletteIndex: paletteIndex);
+
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 5),
+      decoration: BoxDecoration(
+        color: const Color(0xFF1A1A22),
+        borderRadius: BorderRadius.circular(8),
+        border: Border.all(color: const Color(0xFF333333)),
+      ),
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          if (skill.iconUrl != null) ...[
+            SizedBox(
+              width: 14,
+              height: 14,
+              child: SvgPicture.network(
+                skill.iconUrl!,
+                width: 14,
+                height: 14,
+                placeholderBuilder: (_) => Icon(
+                  Icons.code,
+                  size: 12,
+                  color: accent,
+                ),
+              ),
+            ),
+            const SizedBox(width: 6),
+          ],
+          Text(
+            skill.name,
+            style: AppTypography.bodySmall.copyWith(
+              fontSize: 12,
+              fontWeight: FontWeight.w600,
+              color: AppColors.textPrimary,
+              height: 1.2,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _AboutConnectButton extends StatefulWidget {
+  final VoidCallback? onPressed;
+
+  const _AboutConnectButton({this.onPressed});
+
+  @override
+  State<_AboutConnectButton> createState() => _AboutConnectButtonState();
+}
+
+class _AboutConnectButtonState extends State<_AboutConnectButton> {
+  bool _hovered = false;
+
+  @override
+  Widget build(BuildContext context) {
+    return MouseRegion(
+      onEnter: (_) => setState(() => _hovered = true),
+      onExit: (_) => setState(() => _hovered = false),
+      cursor: SystemMouseCursors.click,
+      child: GestureDetector(
+        onTap: widget.onPressed,
+        child: AnimatedContainer(
+          duration: const Duration(milliseconds: 200),
+          padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 13),
+          decoration: BoxDecoration(
+            color: _hovered ? const Color(0xFFE8E8E8) : Colors.white,
+            borderRadius: BorderRadius.circular(12),
+          ),
+          child: Row(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Icon(
+                Icons.send_rounded,
+                size: 16,
+                color: Colors.black.withValues(alpha: _hovered ? 0.75 : 1),
+              ),
+              const SizedBox(width: 10),
+              Text(
+                "Let's Connect",
+                style: AppTypography.labelLarge.copyWith(
+                  color: Colors.black,
+                  fontWeight: FontWeight.w600,
+                  fontSize: 14,
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+class _HeroOutlinedButton extends StatefulWidget {
+  final String label;
+  final IconData? icon;
+  final bool accent;
+  final VoidCallback? onPressed;
+
+  const _HeroOutlinedButton({
+    required this.label,
+    this.icon,
+    this.accent = false,
+    this.onPressed,
+  });
+
+  @override
+  State<_HeroOutlinedButton> createState() => _HeroOutlinedButtonState();
+}
+
+class _HeroOutlinedButtonState extends State<_HeroOutlinedButton> {
+  bool _hovered = false;
+
+  @override
+  Widget build(BuildContext context) {
+    final borderColor =
+        widget.accent ? AppColors.accentCyan : AppColors.border;
+    final fgColor =
+        widget.accent ? AppColors.accentCyan : AppColors.textPrimary;
+
+    return MouseRegion(
+      onEnter: (_) => setState(() => _hovered = true),
+      onExit: (_) => setState(() => _hovered = false),
+      cursor: SystemMouseCursors.click,
+      child: GestureDetector(
+        onTap: widget.onPressed,
+        child: AnimatedContainer(
+          duration: const Duration(milliseconds: 200),
+          padding: const EdgeInsets.symmetric(horizontal: 22, vertical: 14),
+          decoration: BoxDecoration(
+            color: _hovered
+                ? (widget.accent
+                    ? AppColors.accentCyan.withValues(alpha: 0.1)
+                    : AppColors.surfaceElevated.withValues(alpha: 0.6))
+                : Colors.transparent,
+            borderRadius: BorderRadius.circular(12),
+            border: Border.all(
+              color: _hovered && widget.accent
+                  ? AppColors.accentCyan
+                  : borderColor.withValues(alpha: 0.8),
+            ),
+          ),
+          child: Row(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Text(
+                widget.label,
+                style: AppTypography.labelLarge.copyWith(
+                  color: fgColor,
+                  fontWeight: FontWeight.w600,
+                ),
+              ),
+              if (widget.icon != null) ...[
+                const SizedBox(width: 8),
+                Icon(widget.icon, size: 16, color: fgColor),
+              ],
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+}
+
 class _PulsingDot extends StatefulWidget {
   const _PulsingDot();
 
@@ -679,8 +814,8 @@ class _PulsingDotState extends State<_PulsingDot>
         return Opacity(
           opacity: _opacity.value,
           child: Container(
-            width: 8,
-            height: 8,
+            width: 7,
+            height: 7,
             decoration: const BoxDecoration(
               color: AppColors.success,
               shape: BoxShape.circle,
@@ -692,7 +827,6 @@ class _PulsingDotState extends State<_PulsingDot>
   }
 }
 
-// ── HOVER SOCIAL NETWORK GRID TILE ────────────────────────────────────────────
 class _SocialTile extends StatefulWidget {
   final IconData icon;
   final String label;
@@ -715,46 +849,56 @@ class _SocialTileState extends State<_SocialTile> {
 
   @override
   Widget build(BuildContext context) {
-    return MouseRegion(
-      onEnter: (_) => setState(() => _hovered = true),
-      onExit: (_) => setState(() => _hovered = false),
-      child: GestureDetector(
-        onTap: widget.onTap,
-        child: AnimatedContainer(
-          duration: const Duration(milliseconds: 200),
-          decoration: BoxDecoration(
-            color: _hovered
-                ? widget.color.withValues(alpha: 0.1)
-                : AppColors.surfaceElevated.withValues(alpha: 0.5),
-            borderRadius: BorderRadius.circular(16),
-            border: Border.all(
-              color: _hovered
-                  ? widget.color.withValues(alpha: 0.4)
-                  : AppColors.border.withValues(alpha: 0.5),
-              width: 1.2,
-            ),
-          ),
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Icon(
-                widget.icon,
-                color: _hovered ? widget.color : AppColors.textSecondary,
-                size: 20,
-              ),
-              const SizedBox(height: 6),
-              Text(
-                widget.label,
-                style: AppTypography.bodySmall.copyWith(
-                  fontSize: 10,
-                  fontWeight: FontWeight.w600,
-                  color: _hovered ? widget.color : AppColors.textMuted,
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        final compact = constraints.maxHeight < 72;
+        final iconSize = compact ? 18.0 : 22.0;
+        final labelSize = compact ? 10.0 : 11.0;
+
+        return MouseRegion(
+          onEnter: (_) => setState(() => _hovered = true),
+          onExit: (_) => setState(() => _hovered = false),
+          child: GestureDetector(
+            onTap: widget.onTap,
+            child: AnimatedContainer(
+              width: double.infinity,
+              height: double.infinity,
+              duration: const Duration(milliseconds: 200),
+              decoration: BoxDecoration(
+                color: _hovered
+                    ? widget.color.withValues(alpha: 0.1)
+                    : AppColors.background.withValues(alpha: 0.55),
+                borderRadius: BorderRadius.circular(compact ? 10 : 14),
+                border: Border.all(
+                  color: _hovered
+                      ? widget.color.withValues(alpha: 0.35)
+                      : AppColors.border.withValues(alpha: 0.55),
                 ),
               ),
-            ],
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Icon(
+                    widget.icon,
+                    color:
+                        _hovered ? widget.color : AppColors.textSecondary,
+                    size: iconSize,
+                  ),
+                  SizedBox(height: compact ? 4 : 6),
+                  Text(
+                    widget.label,
+                    style: AppTypography.bodySmall.copyWith(
+                      fontSize: labelSize,
+                      fontWeight: FontWeight.w600,
+                      color: _hovered ? widget.color : AppColors.textMuted,
+                    ),
+                  ),
+                ],
+              ),
+            ),
           ),
-        ),
-      ),
+        );
+      },
     );
   }
 }

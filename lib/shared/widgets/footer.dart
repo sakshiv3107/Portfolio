@@ -18,6 +18,8 @@ class Footer extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
+      width: double.infinity,
+      color: AppColors.background,
       padding: const EdgeInsets.symmetric(
         horizontal: AppSpacing.pagePaddingDesktop,
         vertical: AppSpacing.xl,

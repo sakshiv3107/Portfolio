@@ -5,7 +5,6 @@ import '../../../../core/constants/app_typography.dart';
 import '../../../../core/utils/responsive.dart';
 import '../../../../shared/widgets/section_header.dart';
 import '../../../../shared/widgets/tech_badge.dart';
-import '../../../../shared/widgets/infinite_marquee.dart';
 import '../../../../shared/widgets/scroll_reveal.dart';
 import '../../domain/data/portfolio_data.dart';
 
@@ -37,9 +36,9 @@ class SkillsSection extends StatelessWidget {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              ScrollReveal(
-                key: const ValueKey('skills-header'),
-                child: const SectionHeader(
+              const ScrollReveal(
+                key: ValueKey('skills-header'),
+                child: SectionHeader(
                   overline: 'What I Work With',
                   title: 'Skills & Stack.',
                 ),
@@ -94,16 +93,17 @@ class _SkillCategory extends StatelessWidget {
             ],
           ),
           const SizedBox(height: AppSpacing.md),
-          SizedBox(
-            height: 44,
-            child: InfiniteMarquee(
-              key: ValueKey('marquee-$category'),
-              speed: 38.0,
-              gap: 10.0,
-              children: skills
-                  .map<Widget>((s) => TechBadge(skill: s))
-                  .toList(),
-            ),
+          Wrap(
+            spacing: AppSpacing.sm + 2,
+            runSpacing: AppSpacing.sm + 2,
+            children: [
+              for (var i = 0; i < skills.length; i++)
+                TechBadge(
+                  key: ValueKey('$category-${skills[i].name}'),
+                  skill: skills[i],
+                  paletteIndex: i,
+                ),
+            ],
           ),
         ],
       ),
