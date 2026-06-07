@@ -36,6 +36,9 @@ dependencies:
   # HTTP for network images
   http: ^1.2.1
 
+  # Session memory (intro seen flag)
+  shared_preferences: ^2.2.3
+
 dev_dependencies:
   flutter_test:
     sdk: flutter

@@ -19,12 +19,12 @@ class Footer extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       width: double.infinity,
-      color: AppColors.background,
       padding: const EdgeInsets.symmetric(
         horizontal: AppSpacing.pagePaddingDesktop,
         vertical: AppSpacing.xl,
       ),
       decoration: const BoxDecoration(
+        color: AppColors.background,
         border: Border(top: BorderSide(color: AppColors.border)),
       ),
       child: Column(

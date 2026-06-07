@@ -98,66 +98,242 @@
       background-color: #000000;
       margin: 0;
       padding: 0;
-      overflow: hidden;
+      font-family: 'JetBrains Mono', monospace;
     }
-    /* Loading indicator */
+    
+    /* The main overlay container */
     #flutter-loading {
       position: fixed;
       inset: 0;
-      display: flex;
-      align-items: center;
-      justify-content: center;
       background: #000000;
       z-index: 9999;
+      display: flex;
       flex-direction: column;
-      gap: 16px;
+      align-items: center;
+      justify-content: center;
+      transition: opacity 0.8s ease;
+      color: white;
     }
-    #flutter-loading .logo {
-      font-family: monospace;
-      font-size: 20px;
-      color: #00E5FF;
-      letter-spacing: 2px;
-    }
-    #flutter-loading .spinner {
-      width: 32px;
-      height: 32px;
-      border: 2px solid #1E2A3A;
-      border-top-color: #00E5FF;
+
+    /* Pulsing glow behind the text */
+    .glow {
+      position: absolute;
+      width: 600px;
+      height: 600px;
       border-radius: 50%;
-      animation: spin 0.8s linear infinite;
+      background: radial-gradient(circle, rgba(59,130,246,0.06) 0%, rgba(59,130,246,0) 70%);
+      animation: pulse 1.5s ease-in-out infinite alternate;
+      pointer-events: none;
     }
-    @keyframes spin {
-      to { transform: rotate(360deg); }
+    @keyframes pulse {
+      from { opacity: 0.5; transform: scale(0.95); }
+      to { opacity: 1.0; transform: scale(1.05); }
+    }
+
+    /* Word Container */
+    #word-container {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      z-index: 2;
+    }
+
+    /* Word Text */
+    #intro-word {
+      font-size: clamp(36px, 6vw, 72px);
+      font-weight: 300;
+      letter-spacing: 0.08em;
+      line-height: 1.2;
+      text-align: center;
+      margin: 0;
+      display: flex;
+      align-items: center;
+      min-height: 86px; /* Prevent jitter when empty */
+    }
+    #intro-word.cjk {
+      font-weight: 400;
+      letter-spacing: 0.02em;
+    }
+
+    /* Blinking Cursor */
+    .cursor {
+      display: inline-block;
+      width: 0.6em;
+      height: 0.1em;
+      background-color: rgba(59, 130, 246, 0.8);
+      margin-left: 8px;
+      animation: blink 1s step-end infinite;
+      vertical-align: bottom;
+      margin-bottom: 0.2em;
+    }
+    @keyframes blink {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0; }
+    }
+
+    /* Language Label */
+    #intro-lang {
+      font-size: 11px;
+      font-weight: 400;
+      color: rgba(59, 130, 246, 0.6);
+      letter-spacing: 2.5px;
+      margin-top: 16px;
+      text-transform: uppercase;
+      opacity: 0;
+      transition: opacity 0.3s ease;
+    }
+    #intro-lang.show {
+      opacity: 1;
+    }
+
+    /* Progress bar track (inderteminate mode) */
+    .progress-track {
+      position: absolute;
+      bottom: 48px;
+      width: 200px;
+      height: 1.5px;
+      background: rgba(255, 255, 255, 0.1);
+      z-index: 2;
+      overflow: hidden;
+    }
+    /* Progress bar fill */
+    .progress-fill {
+      height: 100%;
+      width: 40%;
+      background: #3B82F6;
+      animation: load-indeterminate 1.5s infinite linear;
+      transform-origin: left;
+    }
+    @keyframes load-indeterminate {
+      0% { transform: translateX(-100%) scaleX(0.2); }
+      50% { transform: translateX(50%) scaleX(1.0); }
+      100% { transform: translateX(250%) scaleX(0.2); }
+    }
+
+    /* Noise overlay */
+    .noise {
+      position: absolute;
+      inset: 0;
+      background-image: url('data:image/svg+xml;utf8,%3Csvg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg"%3E%3Cfilter id="noiseFilter"%3E%3CfeTurbulence type="fractalNoise" baseFrequency="0.65" numOctaves="3" stitchTiles="stitch"/%3E%3C/filter%3E%3Crect width="100%25" height="100%25" filter="url(%23noiseFilter)"/%3E%3C/svg%3E');
+      opacity: 0.03;
+      pointer-events: none;
+      z-index: 1;
     }
   </style>
 </head>
 <body>
-  <!-- Loading screen shown before Flutter initializes -->
+  <!-- Cinematic HTML Intro Overlay -->
   <div id="flutter-loading">
-    <div class="logo">sakshi.dev</div>
-    <div class="spinner"></div>
+    <div class="noise"></div>
+    <div class="glow"></div>
+    
+    <div id="word-container">
+      <h1 id="intro-word"><span id="typed-text"></span><span class="cursor"></span></h1>
+      <div id="intro-lang">ENGLISH</div>
+    </div>
+
+    <div class="progress-track">
+      <div class="progress-fill"></div>
+    </div>
   </div>
 
   <script>
-    function hideFlutterLoader() {
-      const loader = document.getElementById('flutter-loading');
-      if (!loader) return;
-      loader.style.opacity = '0';
-      loader.style.transition = 'opacity 0.4s ease';
-      setTimeout(() => loader.remove(), 400);
-      document.body.style.overflow = '';
+    const words = [
+      { word: 'Hello', lang: 'English', cjk: false },
+      { word: 'नमस्ते', lang: 'Hindi', cjk: true },
+      { word: 'Hola', lang: 'Spanish', cjk: false },
+      { word: 'こんにちは', lang: 'Japanese', cjk: true },
+      { word: 'Bonjour', lang: 'French', cjk: false },
+      { word: '你好', lang: 'Chinese', cjk: true },
+      { word: 'Ciao', lang: 'Italian', cjk: false },
+      { word: 'Merhaba', lang: 'Turkish', cjk: false },
+      { word: 'Привет', lang: 'Russian', cjk: false },
+      { word: 'Olá', lang: 'Portuguese', cjk: false },
+      { word: '안녕하세요', lang: 'Korean', cjk: true },
+      { word: 'Hallo', lang: 'German', cjk: false }
+    ];
+
+    let wordIndex = 0;
+    let charIndex = 0;
+    let isErasing = false;
+    let typingTimer = null;
+    let splashHidden = false;
+    const splashStart = Date.now();
+
+    const typedEl  = document.getElementById('typed-text');
+    const wordEl   = document.getElementById('intro-word');
+    const langEl   = document.getElementById('intro-lang');
+
+    function typeStep() {
+      if (splashHidden) return;
+      const cur = words[wordIndex];
+      if (cur.cjk) wordEl.classList.add('cjk'); else wordEl.classList.remove('cjk');
+      langEl.innerText = cur.lang.toUpperCase();
+
+      if (!isErasing) {
+        charIndex++;
+        typedEl.innerText = cur.word.substring(0, charIndex);
+        if (charIndex === cur.word.length) {
+          langEl.classList.add('show');
+          typingTimer = setTimeout(typeStep, 1200); // hold
+          isErasing = true;
+          return;
+        }
+        typingTimer = setTimeout(typeStep, 95);
+      } else {
+        langEl.classList.remove('show');
+        charIndex--;
+        typedEl.innerText = cur.word.substring(0, charIndex);
+        if (charIndex === 0) {
+          isErasing = false;
+          wordIndex = (wordIndex + 1) % words.length;
+          typingTimer = setTimeout(typeStep, 300); // pause before next
+          return;
+        }
+        typingTimer = setTimeout(typeStep, 45);
+      }
     }
+    typeStep();
 
-    window.addEventListener('flutter-first-frame', hideFlutterLoader);
-
-    // Fallback: never leave the splash stuck if Flutter fails silently
-    setTimeout(function () {
+    function hideSplash() {
+      if (splashHidden) return;
+      splashHidden = true;
+      clearTimeout(typingTimer);
       const loader = document.getElementById('flutter-loading');
       if (loader) {
-        console.warn('Flutter first frame timed out — hiding splash.');
-        hideFlutterLoader();
+        loader.style.opacity = '0';
+        setTimeout(() => { if (loader.parentNode) loader.parentNode.removeChild(loader); }, 800);
       }
-    }, 25000);
+    }
+
+    function maybeHide() {
+      if (splashHidden) return;
+      const elapsed = Date.now() - splashStart;
+      if (elapsed < 2000) {
+        setTimeout(maybeHide, 2000 - elapsed);
+        return;
+      }
+      hideSplash();
+    }
+
+    // Method 1: flutter-first-frame event
+    window.addEventListener('flutter-first-frame', maybeHide);
+
+    // Method 2: Poll for a rendered canvas (reliable fallback)
+    const canvasPoller = setInterval(function () {
+      const c = document.querySelector('canvas');
+      if (c && c.width > 0 && c.height > 0) {
+        clearInterval(canvasPoller);
+        maybeHide();
+      }
+    }, 200);
+
+    // Method 3: Hard fallback after 8 seconds
+    setTimeout(function () {
+      clearInterval(canvasPoller);
+      hideSplash();
+    }, 8000);
 
     window.addEventListener('error', function (e) {
       console.error('Page error:', e.message);
