@@ -310,8 +310,9 @@
     function maybeHide() {
       if (splashHidden) return;
       const elapsed = Date.now() - splashStart;
-      if (elapsed < 2000) {
-        setTimeout(maybeHide, 2000 - elapsed);
+      // Wait at least 1500ms so Flutter and Firebase have time to initialize
+      if (elapsed < 1500) {
+        setTimeout(maybeHide, 1500 - elapsed);
         return;
       }
       hideSplash();
