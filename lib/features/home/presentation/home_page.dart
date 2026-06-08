@@ -6,10 +6,9 @@ import '../../../shared/widgets/footer.dart';
 import 'widgets/bento_hero_section.dart';
 import 'widgets/skills_section.dart';
 import 'widgets/experience_section.dart';
-import 'widgets/projects_section.dart';
 import 'widgets/github_section.dart';
-
-import 'widgets/contact_section.dart';
+import 'widgets/featured_projects/projects_section.dart' as featured;
+import '../../../features/contact/contact_section.dart' as contact;
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
@@ -78,7 +77,7 @@ class _HomePageState extends State<HomePage> {
                 ),
                 SizedBox(
                   key: _sectionKeys[4],
-                  child: const RepaintBoundary(child: ProjectsSection()),
+                  child: const RepaintBoundary(child: featured.ProjectsSection()),
                 ),
                 SizedBox(
                   key: _sectionKeys[5],
@@ -86,7 +85,7 @@ class _HomePageState extends State<HomePage> {
                 ),
                 SizedBox(
                   key: _sectionKeys[8],
-                  child: const RepaintBoundary(child: ContactSection()),
+                  child: const RepaintBoundary(child: contact.ContactSection()),
                 ),
                 const Footer(),
               ],

@@ -7,6 +7,7 @@ import '../../../../core/constants/app_colors.dart';
 import '../../../../core/constants/app_spacing.dart';
 import '../../../../core/constants/app_typography.dart';
 import '../../../../core/utils/responsive.dart';
+import '../../../../shared/widgets/section_header.dart';
 import '../../domain/data/portfolio_data.dart';
 import '../../domain/models/experience.dart';
 
@@ -110,9 +111,11 @@ class _ExperienceSectionState extends State<ExperienceSection>
       child: Container(
         width: double.infinity,
         color: AppColors.background,
-        padding: EdgeInsets.symmetric(
-          horizontal: horizontal,
-          vertical: AppSpacing.section,
+        padding: EdgeInsets.only(
+          left: horizontal,
+          right: horizontal,
+          top: AppSpacing.section / 2, // reduced gap from skills section above
+          bottom: AppSpacing.section,
         ),
         child: Center(
           child: ConstrainedBox(
@@ -128,7 +131,10 @@ class _ExperienceSectionState extends State<ExperienceSection>
                   curve: Curves.easeOut,
                   slideY: 20,
                   totalMs: _masterCtrl.duration!.inMilliseconds,
-                  child: const _ExperienceSectionHeader(),
+                  child: const SectionHeader(
+                    overline: 'Career',
+                    title: 'Experience.',
+                  ),
                 ),
                 const SizedBox(height: AppSpacing.xxl),
                 IntrinsicHeight(
@@ -191,33 +197,7 @@ class _ExperienceSectionState extends State<ExperienceSection>
   }
 }
 
-// ── Section header ──────────────────────────────────────────────────────────
-
-class _ExperienceSectionHeader extends StatelessWidget {
-  const _ExperienceSectionHeader();
-
-  @override
-  Widget build(BuildContext context) {
-    return Row(
-      children: [
-        Icon(
-          Icons.work_outline_rounded,
-          size: 28,
-          color: AppColors.accentCyan.withValues(alpha: 0.9),
-        ),
-        const SizedBox(width: AppSpacing.sm),
-        Text(
-          'Experience',
-          style: AppTypography.headlineMedium.copyWith(
-            fontSize: 28,
-            fontWeight: FontWeight.w700,
-            color: AppColors.textPrimary,
-          ),
-        ),
-      ],
-    );
-  }
-}
+// ── Single timeline entry ───────────────────────────────────────────────────
 
 // ── Single timeline entry ───────────────────────────────────────────────────
 
