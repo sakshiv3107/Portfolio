@@ -48,36 +48,36 @@ class AppTypography {
         height: 1.5,
       );
 
-  // IBM Plex Sans — Body text
-  static TextStyle get bodyLarge => GoogleFonts.ibmPlexSans(
+  // Body text
+  static TextStyle get bodyLarge => GoogleFonts.jetBrainsMono(
         fontSize: 16,
         fontWeight: FontWeight.w400,
         color: AppColors.textSecondary,
         height: 1.7,
       );
 
-  static TextStyle get bodyMedium => GoogleFonts.ibmPlexSans(
+  static TextStyle get bodyMedium => GoogleFonts.jetBrainsMono(
         fontSize: 14,
         fontWeight: FontWeight.w400,
         color: AppColors.textSecondary,
         height: 1.6,
       );
 
-  static TextStyle get bodySmall => GoogleFonts.ibmPlexSans(
+  static TextStyle get bodySmall => GoogleFonts.jetBrainsMono(
         fontSize: 12,
         fontWeight: FontWeight.w400,
         color: AppColors.textMuted,
         height: 1.5,
       );
 
-  static TextStyle get labelLarge => GoogleFonts.ibmPlexSans(
+  static TextStyle get labelLarge => GoogleFonts.jetBrainsMono(
         fontSize: 14,
         fontWeight: FontWeight.w500,
         color: AppColors.textSecondary,
         letterSpacing: 0.1,
       );
 
-  static TextStyle get labelSmall => GoogleFonts.ibmPlexSans(
+  static TextStyle get labelSmall => GoogleFonts.jetBrainsMono(
         fontSize: 11,
         fontWeight: FontWeight.w600,
         color: AppColors.textMuted,
@@ -85,7 +85,7 @@ class AppTypography {
       );
 
   // Overline / Section labels
-  static TextStyle get overline => GoogleFonts.ibmPlexSans(
+  static TextStyle get overline => GoogleFonts.jetBrainsMono(
         fontSize: 12,
         fontWeight: FontWeight.w600,
         color: AppColors.accentCyan,
@@ -101,7 +101,7 @@ class AppTypography {
       );
 
   // Badge text
-  static TextStyle get badge => GoogleFonts.ibmPlexSans(
+  static TextStyle get badge => GoogleFonts.jetBrainsMono(
         fontSize: 12,
         fontWeight: FontWeight.w500,
         color: AppColors.textSecondary,

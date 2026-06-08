@@ -1,3 +1,4 @@
+import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:url_launcher/url_launcher.dart';
@@ -270,31 +271,60 @@ class _DockNavItem extends StatelessWidget {
             color: isActive ? AppColors.navItemActiveBg : Colors.transparent,
             borderRadius: BorderRadius.circular(12),
           ),
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
+          child: Stack(
             children: [
-              TweenAnimationBuilder<Color?>(
-                duration: const Duration(milliseconds: 200),
-                curve: Curves.ease,
-                tween: ColorTween(end: color),
-                builder: (context, animatedColor, _) => FaIcon(
-                  icon,
-                  size: iconSize,
-                  color: animatedColor ?? AppColors.navIconDefault,
-                ),
-              ),
-              if (isActive) ...[
-                const SizedBox(height: 4),
-                AnimatedContainer(
+              Center(
+                child: TweenAnimationBuilder<Color?>(
                   duration: const Duration(milliseconds: 200),
-                  width: 14,
-                  height: 2.5,
-                  decoration: BoxDecoration(
-                    color: AppColors.navIconActive,
-                    borderRadius: BorderRadius.circular(2),
+                  curve: Curves.ease,
+                  tween: ColorTween(end: color),
+                  builder: (context, animatedColor, _) => Stack(
+                    alignment: Alignment.center,
+                    children: [
+                      if (isActive)
+                        Opacity(
+                          opacity: 0.5,
+                          child: ImageFiltered(
+                            imageFilter: ImageFilter.blur(sigmaX: 4, sigmaY: 4),
+                            child: FaIcon(
+                              icon,
+                              size: iconSize,
+                              color: animatedColor,
+                            ),
+                          ),
+                        ),
+                      FaIcon(
+                        icon,
+                        size: iconSize,
+                        color: animatedColor ?? AppColors.navIconDefault,
+                      ),
+                    ],
                   ),
                 ),
-              ],
+              ),
+              if (isActive)
+                Positioned(
+                  right: 0,
+                  top: itemSize * 0.25,
+                  bottom: itemSize * 0.25,
+                  child: Container(
+                    width: 3,
+                    decoration: BoxDecoration(
+                      color: AppColors.navIconActive,
+                      borderRadius: const BorderRadius.only(
+                        topLeft: Radius.circular(4),
+                        bottomLeft: Radius.circular(4),
+                      ),
+                      boxShadow: [
+                        BoxShadow(
+                          color: AppColors.navIconActive.withOpacity(0.5),
+                          blurRadius: 8,
+                          spreadRadius: 1,
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
             ],
           ),
         ),
