@@ -141,11 +141,13 @@ class _BentoHeroSectionState extends State<BentoHeroSection>
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Wrap(
+        const Wrap(
           spacing: 10,
           runSpacing: 10,
-          children: const [
+          children:  [
             _StatusPill(
+              borderColor: AppColors.success,
+              backgroundColor: Color(0x1410B981),
               child: Row(
                 mainAxisSize: MainAxisSize.min,
                 children: [
@@ -161,8 +163,6 @@ class _BentoHeroSectionState extends State<BentoHeroSection>
                   ),
                 ],
               ),
-              borderColor: AppColors.success,
-              backgroundColor: Color(0x1410B981),
             ),
           ],
         ),
