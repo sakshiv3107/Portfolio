@@ -357,41 +357,46 @@ class _BentoHeroSectionState extends State<BentoHeroSection>
           child: SizedBox(
             width: gridExtent,
             height: gridExtent,
-            child: GridView.count(
-              crossAxisCount: 2,
-              crossAxisSpacing: gridSpacing,
-              mainAxisSpacing: gridSpacing,
+            child: GridView.builder(
               physics: const NeverScrollableScrollPhysics(),
-              mainAxisExtent: cellSize,
-              children: [
-                _buildSocialTile(
-                  icon: FontAwesomeIcons.github,
-                  label: 'GitHub',
-                  color: Colors.white,
-                  onTap: () => _launchUrl('https://github.com/sakshiv3107'),
-                ),
-                _buildSocialTile(
-                  icon: FontAwesomeIcons.linkedin,
-                  label: 'LinkedIn',
-                  color: const Color(0xFF0A66C2),
-                  onTap: () => _launchUrl(
-                    'https://www.linkedin.com/in/sakshi-vishnoi-7770b2315/',
+              gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                crossAxisCount: 2,
+                crossAxisSpacing: gridSpacing,
+                mainAxisSpacing: gridSpacing,
+                mainAxisExtent: cellSize,  // ✅ valid here
+              ),
+              itemCount: 4,
+              itemBuilder: (context, index) {
+                final tiles = [
+                  _buildSocialTile(
+                    icon: FontAwesomeIcons.github,
+                    label: 'GitHub',
+                    color: Colors.white,
+                    onTap: () => _launchUrl('https://github.com/sakshiv3107'),
                   ),
-                ),
-                _buildSocialTile(
-                  icon: Icons.email_outlined,
-                  label: 'Email',
-                  color: AppColors.accentCyan,
-                  onTap: () =>
-                      _launchUrl('mailto:sakshi.vishnoi3107@gmail.com'),
-                ),
-                _buildSocialTile(
-                  icon: Icons.description_outlined,
-                  label: 'Resume',
-                  color: AppColors.accentViolet,
-                  onTap: launchResume,
-                ),
-              ],
+                  _buildSocialTile(
+                    icon: FontAwesomeIcons.linkedin,
+                    label: 'LinkedIn',
+                    color: const Color(0xFF0A66C2),
+                    onTap: () => _launchUrl(
+                      'https://www.linkedin.com/in/sakshi-vishnoi-7770b2315/',
+                    ),
+                  ),
+                  _buildSocialTile(
+                    icon: Icons.email_outlined,
+                    label: 'Email',
+                    color: AppColors.accentCyan,
+                    onTap: () => _launchUrl('mailto:sakshi.vishnoi3107@gmail.com'),
+                  ),
+                  _buildSocialTile(
+                    icon: Icons.description_outlined,
+                    label: 'Resume',
+                    color: AppColors.accentViolet,
+                    onTap: launchResume,
+                  ),
+                ];
+                return tiles[index];
+              },
             ),
           ),
         );
