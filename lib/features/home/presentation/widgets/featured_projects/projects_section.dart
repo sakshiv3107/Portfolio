@@ -6,6 +6,7 @@ import 'project_card.dart';
 import 'projects_data.dart';
 import '../../../../../core/constants/app_colors.dart';
 import '../../../../../core/constants/app_spacing.dart';
+import '../../../../../core/constants/app_typography.dart';
 import '../../../../../core/utils/responsive.dart';
 class ProjectsSection extends StatefulWidget {
   const ProjectsSection({super.key});
@@ -162,19 +163,19 @@ class _ProjectsSectionState extends State<ProjectsSection> with TickerProviderSt
             children: [
               Text(
                 '// selected work'.toUpperCase(),
-                style: GoogleFonts.jetBrainsMono(
+                style: AppTypography.code.copyWith(
                   fontSize: 11,
-                  color: const Color(0x993B82F6),
+                  color: AppColors.accentPrimary.withValues(alpha: 0.6),
                   letterSpacing: 2.2,
                 ),
               ),
               const SizedBox(height: 8),
               Text(
                 'Featured Projects.',
-                style: GoogleFonts.syne(
+                style: AppTypography.displayLarge.copyWith(
                   fontSize: 52,
                   fontWeight: FontWeight.w800,
-                  color: Colors.white,
+                  color: AppColors.textPrimary,
                   letterSpacing: -1.04,
                 ),
               ),
@@ -192,7 +193,7 @@ class _ProjectsSectionState extends State<ProjectsSection> with TickerProviderSt
             return Container(
               height: 3,
               width: 40 * curve.value,
-              color: const Color(0xFF3B82F6),
+              color: AppColors.accentPrimary,
             );
           },
         ),
@@ -229,18 +230,18 @@ class _ProjectsSectionState extends State<ProjectsSection> with TickerProviderSt
                       duration: const Duration(milliseconds: 200),
                       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 6),
                       decoration: BoxDecoration(
-                        color: isActive ? const Color(0xFF3B82F6) : Colors.transparent,
+                        color: isActive ? AppColors.accentPrimary : Colors.transparent,
                         borderRadius: BorderRadius.circular(2),
                         border: Border.all(
-                          color: isActive ? const Color(0xFF3B82F6) : const Color(0x1EFFFFFF),
+                          color: isActive ? AppColors.accentPrimary : AppColors.border,
                         ),
                       ),
                       child: Text(
                         filter.toUpperCase(),
-                        style: GoogleFonts.jetBrainsMono(
+                        style: AppTypography.code.copyWith(
                           fontSize: 10,
                           fontWeight: isActive ? FontWeight.w600 : FontWeight.w400,
-                          color: isActive ? const Color(0xFF080C11) : const Color(0x73FFFFFF),
+                          color: isActive ? AppColors.background : AppColors.textSecondary,
                         ),
                       ),
                     ),
@@ -270,9 +271,9 @@ class _ProjectsSectionState extends State<ProjectsSection> with TickerProviderSt
                 child: Container(
                   width: 600,
                   height: 300,
-                  decoration: const BoxDecoration(
+                  decoration: BoxDecoration(
                     gradient: RadialGradient(
-                      colors: [Color(0xFF3B82F6), Colors.transparent],
+                      colors: [AppColors.accentPrimary, Colors.transparent],
                     ),
                   ),
                 ),
@@ -290,17 +291,17 @@ class _ProjectsSectionState extends State<ProjectsSection> with TickerProviderSt
       children: [
         Text(
           '04 projects · 2024–2025',
-          style: GoogleFonts.jetBrainsMono(
+          style: AppTypography.code.copyWith(
             fontSize: 11,
-            color: const Color(0x40FFFFFF), // rgba(255,255,255,0.25)
+            color: AppColors.textMuted,
           ),
         ),
         MouseRegion(
           cursor: SystemMouseCursors.click,
           child: _HoverText(
             text: '── View all on GitHub →',
-            baseColor: const Color(0xB33B82F6), // #3B82F6 at 70% opacity
-            hoverColor: const Color(0xFF3B82F6), // 100% opacity
+            baseColor: AppColors.accentPrimary.withValues(alpha: 0.7),
+            hoverColor: AppColors.accentPrimary,
           ),
         ),
       ],
@@ -333,7 +334,7 @@ class _HoverTextState extends State<_HoverText> {
       onExit: (_) => setState(() => _isHovered = false),
       child: AnimatedDefaultTextStyle(
         duration: const Duration(milliseconds: 200),
-        style: GoogleFonts.jetBrainsMono(
+        style: AppTypography.code.copyWith(
           fontSize: 11,
           color: _isHovered ? widget.hoverColor : widget.baseColor,
         ),

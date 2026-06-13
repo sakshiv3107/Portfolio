@@ -84,9 +84,9 @@ class _BentoCardState extends State<BentoCard> {
                           begin: Alignment.topLeft,
                           end: Alignment.bottomRight,
                           colors: [
-                            const Color(0xFF3B82F6).withValues(alpha: 0.05), // blue-500/5
+                            AppColors.accentPrimary.withValues(alpha: 0.05),
                             Colors.transparent,
-                            const Color(0xFF8B5CF6).withValues(alpha: 0.05), // purple-500/5
+                            AppColors.accentSecondary.withValues(alpha: 0.05),
                           ],
                         ),
                       ),

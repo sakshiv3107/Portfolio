@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
-import 'package:google_fonts/google_fonts.dart';
 import 'package:url_launcher/url_launcher.dart';
+
+import '../../core/constants/app_colors.dart';
+import '../../core/constants/app_typography.dart';
 
 class ContactInfoWidget extends StatefulWidget {
   const ContactInfoWidget({super.key});
@@ -71,20 +73,14 @@ class _ContactInfoWidgetState extends State<ContactInfoWidget>
         // Terminal-style heading
         Text(
           "// let's connect",
-          style: GoogleFonts.jetBrainsMono(
-            fontSize: 13,
-            color: const Color(0xFF3B82F6),
-            letterSpacing: 1.2,
+          style: AppTypography.overline.copyWith(
+            color: AppColors.accentPrimary,
           ),
         ),
         const SizedBox(height: 20),
         Text(
           'Open to internship opportunities, freelance projects, and collabs.',
-          style: GoogleFonts.jetBrainsMono(
-            fontSize: 13,
-            color: const Color(0xFF6B7A8D),
-            height: 1.7,
-          ),
+          style: AppTypography.bodyMedium,
         ),
         const SizedBox(height: 36),
 
@@ -110,17 +106,17 @@ class _ContactInfoWidgetState extends State<ContactInfoWidget>
             return Container(
               padding: const EdgeInsets.all(20),
               decoration: BoxDecoration(
-                color: const Color(0xFF0F1318),
+                color: AppColors.surface,
                 border: Border.all(
                   color: Color.lerp(
-                    const Color(0x1A3B82F6),
-                    const Color(0x553B82F6),
+                    AppColors.accentSuccess.withValues(alpha: 0.10),
+                    AppColors.accentSuccess.withValues(alpha: 0.25),
                     _pulseCtrl.value,
                   )!,
                 ),
                 boxShadow: [
                   BoxShadow(
-                    color: Color.fromRGBO(59, 130, 246, glowOpacity),
+                    color: AppColors.accentSuccess.withValues(alpha: glowOpacity),
                     blurRadius: 20,
                     spreadRadius: 0,
                   ),
@@ -140,7 +136,7 @@ class _ContactInfoWidgetState extends State<ContactInfoWidget>
                           decoration: BoxDecoration(
                             shape: BoxShape.circle,
                             border: Border.all(
-                              color: const Color(0xFF00FF88),
+                              color: AppColors.accentSuccess,
                               width: 1.5,
                             ),
                           ),
@@ -154,7 +150,7 @@ class _ContactInfoWidgetState extends State<ContactInfoWidget>
                           height: 8,
                           decoration: const BoxDecoration(
                             shape: BoxShape.circle,
-                            color: Color(0xFF00FF88),
+                            color: AppColors.accentSuccess,
                           ),
                         ),
                       ),
@@ -167,18 +163,16 @@ class _ContactInfoWidgetState extends State<ContactInfoWidget>
                       children: [
                         Text(
                           'Available for Opportunities',
-                          style: GoogleFonts.jetBrainsMono(
-                            fontSize: 12,
-                            color: const Color(0xFFE8EDF5),
+                          style: AppTypography.bodySmall.copyWith(
+                            color: AppColors.textPrimary,
                             fontWeight: FontWeight.w600,
                           ),
                         ),
                         const SizedBox(height: 3),
                         Text(
-                          'Summer / Fall 2026 · Flutter & Mobile',
-                          style: GoogleFonts.jetBrainsMono(
-                            fontSize: 11,
-                            color: const Color(0xFF6B7A8D),
+                          '2026 · Flutter & Mobile',
+                          style: AppTypography.labelSmall.copyWith(
+                            color: AppColors.textMuted,
                           ),
                         ),
                       ],
@@ -227,12 +221,12 @@ class _SocialLinkTileState extends State<_SocialLinkTile> {
           padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
           decoration: BoxDecoration(
             color: _hovered
-                ? const Color(0x0D3B82F6)
-                : const Color(0xFF0F1318),
+                ? AppColors.surfaceHover
+                : AppColors.surface,
             border: Border.all(
               color: _hovered
-                  ? const Color(0x663B82F6)
-                  : const Color(0xFF1A2030),
+                  ? AppColors.borderAccent
+                  : AppColors.border,
             ),
           ),
           child: Row(
@@ -243,8 +237,8 @@ class _SocialLinkTileState extends State<_SocialLinkTile> {
                   widget.icon,
                   size: 16,
                   color: _hovered
-                      ? const Color(0xFF3B82F6)
-                      : const Color(0xFF6B7A8D),
+                      ? AppColors.accentPrimary
+                      : AppColors.textSecondary,
                 ),
               ),
               const SizedBox(width: 14),
@@ -254,20 +248,15 @@ class _SocialLinkTileState extends State<_SocialLinkTile> {
                   children: [
                     Text(
                       widget.label,
-                      style: GoogleFonts.jetBrainsMono(
-                        fontSize: 10,
-                        color: const Color(0xFF6B7A8D),
-                        letterSpacing: 1.0,
-                      ),
+                      style: AppTypography.labelSmall,
                     ),
                     const SizedBox(height: 2),
                     Text(
                       widget.value,
-                      style: GoogleFonts.jetBrainsMono(
-                        fontSize: 12,
+                      style: AppTypography.bodySmall.copyWith(
                         color: _hovered
-                            ? const Color(0xFF3B82F6)
-                            : const Color(0xFFE8EDF5),
+                            ? AppColors.accentPrimary
+                            : AppColors.textPrimary,
                         fontWeight: FontWeight.w500,
                       ),
                     ),
@@ -280,8 +269,8 @@ class _SocialLinkTileState extends State<_SocialLinkTile> {
                   Icons.arrow_outward,
                   size: 13,
                   color: _hovered
-                      ? const Color(0xFF3B82F6)
-                      : const Color(0x4DE8EDF5),
+                      ? AppColors.accentPrimary
+                      : AppColors.textDisabled,
                 ),
               ),
             ],

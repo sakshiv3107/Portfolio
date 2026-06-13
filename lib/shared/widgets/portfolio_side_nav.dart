@@ -304,7 +304,7 @@ class _DockNavItem extends StatelessWidget {
               ),
               if (isActive)
                 Positioned(
-                  right: 0,
+                  left: 0,
                   top: itemSize * 0.25,
                   bottom: itemSize * 0.25,
                   child: Container(
@@ -312,8 +312,8 @@ class _DockNavItem extends StatelessWidget {
                     decoration: BoxDecoration(
                       color: AppColors.navIconActive,
                       borderRadius: const BorderRadius.only(
-                        topLeft: Radius.circular(4),
-                        bottomLeft: Radius.circular(4),
+                        topRight: Radius.circular(4),
+                        bottomRight: Radius.circular(4),
                       ),
                       boxShadow: [
                         BoxShadow(

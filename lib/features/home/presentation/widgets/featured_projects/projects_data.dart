@@ -28,7 +28,7 @@ final codeSphere = ProjectData(
   subtitle: 'Multi-platform coding analytics aggregator',
   description: 'Aggregates competitive programming stats from LeetCode, CodeChef, Codeforces, GFG, HackerRank. Features Gemini AI Insight Coach, OTA update system, and dark precision UI with sparklines and activity heatmaps.',
   badgeType: 'Flutter',
-  githubUrl: 'https://github.com',
+  githubUrl: 'https://github.com/sakshiv3107/CodeSphere-Coding-Analytics-App',
   status: 'Live',
   tags: ['Dart', 'Riverpod', 'Gemini API', 'Firebase'],
   isLive: true,
@@ -36,7 +36,7 @@ final codeSphere = ProjectData(
 
 final mediAuth = ProjectData(
   number: '02',
-  title: 'MediAuth AI',
+  title: 'MediAuth AI ',
   subtitle: 'AI-powered healthcare prior authorization',
   description: 'Autonomous insurance authorization agent with multi-level appeal loop. Built with LangGraph + Claude Sonnet + FastAPI + ChromaDB + PostgreSQL backend.',
   badgeType: 'AI',

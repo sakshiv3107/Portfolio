@@ -512,7 +512,7 @@ class _TimelineDotWithPulseState extends State<_TimelineDotWithPulse>
                       decoration: BoxDecoration(
                         shape: BoxShape.circle,
                         border: Border.all(
-                          color: AppColors.accentCyan.withValues(alpha: 0.3),
+                          color: AppColors.accentPrimary.withValues(alpha: 0.3),
                           width: 2,
                         ),
                       ),
@@ -527,7 +527,7 @@ class _TimelineDotWithPulseState extends State<_TimelineDotWithPulse>
                     width: 10,
                     height: 10,
                     decoration: const BoxDecoration(
-                      color: AppColors.accentCyan,
+                      color: AppColors.accentPrimary,
                       shape: BoxShape.circle,
                     ),
                   ),
@@ -656,19 +656,18 @@ class _CurrentBadge extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
       decoration: BoxDecoration(
-        color: AppColors.accentCyan.withValues(alpha: 0.12),
+        color: AppColors.accentPrimary.withValues(alpha: 0.10),
         borderRadius: BorderRadius.circular(4),
         border: Border.all(
-          color: AppColors.accentCyan.withValues(alpha: 0.25),
+          color: AppColors.accentPrimary.withValues(alpha: 0.25),
         ),
       ),
       child: Text(
         'CURRENT',
-        style: AppTypography.labelSmall.copyWith(
+        style: AppTypography.badge.copyWith(
           fontSize: 11,
           letterSpacing: 0.8,
-          color: AppColors.accentCyan,
-          fontWeight: FontWeight.w600,
+          color: AppColors.accentPrimary,
         ),
       ),
     );

@@ -1,7 +1,8 @@
 import 'dart:ui';
 import 'package:flutter/material.dart';
-import 'package:google_fonts/google_fonts.dart';
 import 'projects_data.dart';
+import '../../../../../core/constants/app_colors.dart';
+import '../../../../../core/constants/app_typography.dart';
 
 class ProjectCard extends StatefulWidget {
   final ProjectData data;
@@ -52,27 +53,27 @@ class _ProjectCardState extends State<ProjectCard> with SingleTickerProviderStat
 
   Color _getBadgeBgColor() {
     switch (widget.data.badgeType) {
-      case 'Flutter': return const Color(0x1A3B82F6);
-      case 'AI': return const Color(0x1A8A5CF6);
-      case 'Web': return const Color(0x1AFB923C);
+      case 'Flutter': return AppColors.accentPrimary.withValues(alpha: 0.1);
+      case 'AI': return AppColors.accentSecondary.withValues(alpha: 0.1);
+      case 'Web': return AppColors.accentSuccess.withValues(alpha: 0.1);
       default: return Colors.transparent;
     }
   }
 
   Color _getBadgeTextColor() {
     switch (widget.data.badgeType) {
-      case 'Flutter': return const Color(0xFF3B82F6);
-      case 'AI': return const Color(0xFFA78BFA);
-      case 'Web': return const Color(0xFFFB923C);
+      case 'Flutter': return AppColors.accentPrimary;
+      case 'AI': return AppColors.accentSecondary;
+      case 'Web': return AppColors.accentSuccess;
       default: return Colors.white;
     }
   }
 
   Color _getBadgeBorderColor() {
     switch (widget.data.badgeType) {
-      case 'Flutter': return const Color(0x383B82F6);
-      case 'AI': return const Color(0x388A5CF6);
-      case 'Web': return const Color(0x38FB923C);
+      case 'Flutter': return AppColors.accentPrimary.withValues(alpha: 0.2);
+      case 'AI': return AppColors.accentSecondary.withValues(alpha: 0.2);
+      case 'Web': return AppColors.accentSuccess.withValues(alpha: 0.2);
       default: return Colors.transparent;
     }
   }
@@ -118,8 +119,9 @@ class _ProjectCardState extends State<ProjectCard> with SingleTickerProviderStat
                 return Container(
                   height: widget.isHero ? double.infinity : null,
                   decoration: BoxDecoration(
-                    color: Color.lerp(const Color(0xFF080C11), const Color(0xFF0D1219), _hoverController.value),
+                    color: Color.lerp(AppColors.surface, AppColors.surfaceHover, _hoverController.value),
                     borderRadius: BorderRadius.zero, // NO border-radius on cards. Sharp corners only.
+                    border: Border.all(color: AppColors.border),
                   ),
                   child: Stack(
                     children: [
@@ -132,9 +134,9 @@ class _ProjectCardState extends State<ProjectCard> with SingleTickerProviderStat
                           child: Container(
                             width: 200,
                             height: 200,
-                            decoration: const BoxDecoration(
+                            decoration: BoxDecoration(
                               gradient: RadialGradient(
-                                colors: [Color(0x113B82F6), Colors.transparent],
+                                colors: [AppColors.accentPrimary.withValues(alpha: 0.08), Colors.transparent],
                               ),
                             ),
                           ),
@@ -159,7 +161,7 @@ class _ProjectCardState extends State<ProjectCard> with SingleTickerProviderStat
                                   ),
                                   child: Text(
                                     widget.data.badgeType.toUpperCase(),
-                                    style: GoogleFonts.jetBrainsMono(
+                                    style: AppTypography.code.copyWith(
                                       fontSize: 10,
                                       color: _getBadgeTextColor(),
                                       fontWeight: FontWeight.w500,
@@ -175,13 +177,13 @@ class _ProjectCardState extends State<ProjectCard> with SingleTickerProviderStat
                                     decoration: BoxDecoration(
                                       shape: BoxShape.circle,
                                       border: Border.all(
-                                        color: Color.lerp(const Color(0x1AFFFFFF), const Color(0xFF3B82F6), _hoverController.value)!,
+                                        color: Color.lerp(AppColors.border, AppColors.accentPrimary, _hoverController.value)!,
                                       ),
                                     ),
                                     child: Icon(
                                       Icons.arrow_outward,
                                       size: 14,
-                                      color: Color.lerp(const Color(0x4DFFFFFF), const Color(0xFF3B82F6), _hoverController.value),
+                                      color: Color.lerp(AppColors.textMuted, AppColors.accentPrimary, _hoverController.value),
                                     ),
                                   ),
                                 ),
@@ -190,26 +192,26 @@ class _ProjectCardState extends State<ProjectCard> with SingleTickerProviderStat
                             const SizedBox(height: 24),
                             Text(
                               widget.data.number,
-                              style: GoogleFonts.jetBrainsMono(
+                              style: AppTypography.code.copyWith(
                                 fontSize: 11,
-                                color: const Color(0xFF3B82F6).withOpacity(lerpDouble(0.35, 0.70, _hoverController.value)!),
+                                color: AppColors.accentPrimary.withValues(alpha: lerpDouble(0.35, 0.70, _hoverController.value)!),
                               ),
                             ),
                             const SizedBox(height: 12),
                             Text(
                               widget.data.title,
-                              style: GoogleFonts.syne(
+                              style: AppTypography.displayMedium.copyWith(
                                 fontSize: widget.isHero ? 34 : 26,
                                 fontWeight: FontWeight.w700,
-                                color: Colors.white,
+                                color: AppColors.textPrimary,
                               ),
                             ),
                             const SizedBox(height: 8),
                             Text(
                               widget.data.subtitle,
-                              style: GoogleFonts.jetBrainsMono(
+                              style: AppTypography.code.copyWith(
                                 fontSize: 11,
-                                color: const Color(0x8C3B82F6), // #3B82F6 at 55% opacity
+                                color: AppColors.accentPrimary.withValues(alpha: 0.55),
                               ),
                             ),
                             const SizedBox(height: 16),
@@ -219,10 +221,10 @@ class _ProjectCardState extends State<ProjectCard> with SingleTickerProviderStat
                                 widget.data.description,
                                 maxLines: 3,
                                 overflow: TextOverflow.ellipsis,
-                                style: GoogleFonts.jetBrainsMono(
+                                style: AppTypography.code.copyWith(
                                   fontSize: 12,
                                   height: 1.75,
-                                  color: const Color(0x61FFFFFF), // rgba(255,255,255,0.38)
+                                  color: AppColors.textSecondary,
                                 ),
                               ),
                             ),
@@ -236,7 +238,7 @@ class _ProjectCardState extends State<ProjectCard> with SingleTickerProviderStat
                                   padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
                                   decoration: BoxDecoration(
                                     border: Border.all(
-                                      color: _isGithubHovered ? const Color(0x663B82F6) : const Color(0x26FFFFFF),
+                                      color: _isGithubHovered ? AppColors.accentPrimary.withValues(alpha: 0.4) : AppColors.border,
                                     ),
                                     borderRadius: BorderRadius.circular(2),
                                   ),
@@ -246,14 +248,14 @@ class _ProjectCardState extends State<ProjectCard> with SingleTickerProviderStat
                                       Icon(
                                         Icons.code,
                                         size: 24,
-                                        color: _isGithubHovered ? const Color(0xFF3B82F6) : const Color(0x99FFFFFF),
+                                        color: _isGithubHovered ? AppColors.accentPrimary : AppColors.textSecondary,
                                       ),
                                       const SizedBox(width: 8),
                                       Text(
                                         'GitHub',
-                                        style: GoogleFonts.jetBrainsMono(
+                                        style: AppTypography.code.copyWith(
                                           fontSize: 11,
-                                          color: _isGithubHovered ? const Color(0xFF3B82F6) : const Color(0x99FFFFFF),
+                                          color: _isGithubHovered ? AppColors.accentPrimary : AppColors.textSecondary,
                                         ),
                                       ),
                                     ],
@@ -264,7 +266,7 @@ class _ProjectCardState extends State<ProjectCard> with SingleTickerProviderStat
                             if (!widget.isHero) const SizedBox(height: 24),
                             Container(
                               height: 1,
-                              color: const Color(0x0FFFFFFF), // rgba(255,255,255,0.06)
+                              color: AppColors.border,
                             ),
                             const SizedBox(height: 16),
                             Row(
@@ -274,9 +276,9 @@ class _ProjectCardState extends State<ProjectCard> with SingleTickerProviderStat
                                     widget.data.tags.join(' · '),
                                     maxLines: 1,
                                     overflow: TextOverflow.ellipsis,
-                                    style: GoogleFonts.jetBrainsMono(
+                                    style: AppTypography.code.copyWith(
                                       fontSize: 10,
-                                      color: const Color(0x4DFFFFFF), // rgba(255,255,255,0.30)
+                                      color: AppColors.textMuted,
                                     ),
                                   ),
                                 ),
@@ -303,9 +305,9 @@ class _ProjectCardState extends State<ProjectCard> with SingleTickerProviderStat
                                     const SizedBox(width: 6),
                                     Text(
                                       widget.data.status,
-                                      style: GoogleFonts.jetBrainsMono(
+                                      style: AppTypography.code.copyWith(
                                         fontSize: 10,
-                                        color: const Color(0x4DFFFFFF),
+                                        color: AppColors.textMuted,
                                       ),
                                     ),
                                   ],

@@ -239,6 +239,28 @@ class _ContactSectionState extends State<ContactSection> {
             width: double.infinity,
             child: ElevatedButton.icon(
               onPressed: _isLoading ? null : _submit,
+              style: ButtonStyle(
+                backgroundColor: WidgetStateProperty.resolveWith<Color>((states) {
+                  if (states.contains(WidgetState.disabled)) {
+                    return AppColors.accentPrimary.withValues(alpha: 0.5);
+                  }
+                  if (states.contains(WidgetState.hovered)) {
+                    return const Color(0xFFEA580C); // hover color
+                  }
+                  return AppColors.accentPrimary;
+                }),
+                foregroundColor: WidgetStateProperty.all(AppColors.background), // #0F0D09
+                textStyle: WidgetStateProperty.all(
+                  AppTypography.labelLarge.copyWith(
+                    fontSize: 13,
+                    fontWeight: FontWeight.w400,
+                  ),
+                ),
+                padding: WidgetStateProperty.all(const EdgeInsets.symmetric(vertical: 16)),
+                shape: WidgetStateProperty.all(
+                  RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+                ),
+              ),
               icon: _isLoading
                   ? const SizedBox(
                       width: 16,
@@ -298,9 +320,9 @@ class _ContactSectionState extends State<ContactSection> {
         Container(
           padding: const EdgeInsets.all(AppSpacing.lg),
           decoration: BoxDecoration(
-            color: AppColors.accentCyan.withOpacity(0.05),
+            color: AppColors.accentSuccess.withValues(alpha: 0.05),
             borderRadius: BorderRadius.circular(12),
-            border: Border.all(color: AppColors.accentCyanMuted),
+            border: Border.all(color: AppColors.accentSuccess.withValues(alpha: 0.2)),
           ),
           child: Row(
             children: [
@@ -308,7 +330,7 @@ class _ContactSectionState extends State<ContactSection> {
                 width: 8,
                 height: 8,
                 decoration: const BoxDecoration(
-                  color: AppColors.accentCyan,
+                  color: AppColors.accentSuccess,
                   shape: BoxShape.circle,
                 ),
               ),
@@ -318,14 +340,14 @@ class _ContactSectionState extends State<ContactSection> {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      'Available for Internships',
+                      'Available for Opportunities',
                       style: AppTypography.labelLarge.copyWith(
                         color: AppColors.textPrimary,
                         fontWeight: FontWeight.w600,
                       ),
                     ),
                     Text(
-                      'Summer / Fall 2025 · Flutter & Mobile',
+                      '2026 · Flutter & Mobile',
                       style: AppTypography.bodySmall,
                     ),
                   ],
@@ -363,10 +385,21 @@ class _FormField extends StatelessWidget {
       maxLines: maxLines,
       keyboardType: keyboardType,
       validator: validator,
-      style: AppTypography.bodyMedium.copyWith(color: AppColors.textPrimary),
+      style: AppTypography.code.copyWith(
+        color: AppColors.textPrimary, 
+        fontSize: 13,
+      ),
       decoration: InputDecoration(
-        labelText: label,
+        labelText: '> ${label.toLowerCase()}:',
+        labelStyle: AppTypography.code.copyWith(
+          color: AppColors.textMuted, 
+          fontSize: 12,
+        ),
         hintText: hint,
+        hintStyle: AppTypography.code.copyWith(
+          color: AppColors.textMuted.withValues(alpha: 0.5), 
+          fontSize: 13,
+        ),
       ),
     );
   }

@@ -74,18 +74,18 @@ class _TechBadgeState extends State<TechBadge> {
               duration: const Duration(milliseconds: 160),
               curve: Curves.easeOutCubic,
               padding: const EdgeInsets.symmetric(
-                horizontal: AppSpacing.md,
-                vertical: AppSpacing.sm,
+                horizontal: 12,
+                vertical: 6,
               ),
               decoration: BoxDecoration(
                 color: _active
-                    ? _accent.withValues(alpha: 0.14)
-                    : AppColors.surface,
+                    ? AppColors.textPrimary.withValues(alpha: 0.04)
+                    : AppColors.textPrimary.withValues(alpha: 0.04),
                 border: Border.all(
-                  color: _active ? _accent : AppColors.border,
-                  width: _active ? 1.5 : 1,
+                  color: _active ? AppColors.accentPrimary.withValues(alpha: 0.25) : AppColors.textPrimary.withValues(alpha: 0.08),
+                  width: 1,
                 ),
-                borderRadius: BorderRadius.circular(AppSpacing.badgeRadius),
+                borderRadius: BorderRadius.circular(6),
                 boxShadow: _active
                     ? [
                         BoxShadow(
@@ -110,7 +110,7 @@ class _TechBadgeState extends State<TechBadge> {
                         placeholderBuilder: (_) => Icon(
                           Icons.code,
                           size: 12,
-                          color: _active ? _accent : AppColors.accentCyan,
+                          color: _active ? AppColors.accentPrimary : AppColors.accentPrimary,
                         ),
                       ),
                     ),
@@ -119,7 +119,7 @@ class _TechBadgeState extends State<TechBadge> {
                   Text(
                     widget.skill.name,
                     style: AppTypography.badge.copyWith(
-                      color: _active ? _accent : AppColors.textPrimary,
+                      color: _active ? AppColors.accentPrimary : AppColors.textSecondary,
                     ),
                   ),
                 ],

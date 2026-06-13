@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'emailjs_service.dart';
+import '../../core/constants/app_colors.dart';
+import '../../core/constants/app_typography.dart';
 
 enum _SendState { idle, loading, success, error }
 
@@ -107,52 +109,52 @@ class _ContactFormWidgetState extends State<ContactFormWidget>
           children: [
             TextSpan(
               text: '> ',
-              style: GoogleFonts.jetBrainsMono(
+              style: AppTypography.code.copyWith(
                 fontSize: 11,
                 color: focused
-                    ? const Color(0xFF3B82F6)
-                    : const Color(0xFF6B7A8D),
+                    ? AppColors.accentPrimary
+                    : AppColors.textMuted,
               ),
             ),
             TextSpan(
               text: '$label:',
-              style: GoogleFonts.jetBrainsMono(
+              style: AppTypography.code.copyWith(
                 fontSize: 11,
                 color: focused
-                    ? const Color(0xFFE8EDF5)
-                    : const Color(0xFF6B7A8D),
+                    ? AppColors.textPrimary
+                    : AppColors.textMuted,
               ),
             ),
           ],
         ),
       ),
       hintText: hint,
-      hintStyle: GoogleFonts.jetBrainsMono(
+      hintStyle: AppTypography.code.copyWith(
         fontSize: 13,
-        color: const Color(0x4D6B7A8D),
+        color: AppColors.textMuted.withValues(alpha: 0.5),
       ),
       floatingLabelBehavior: FloatingLabelBehavior.always,
       contentPadding: const EdgeInsets.fromLTRB(16, 28, 16, 14),
-      enabledBorder: OutlineInputBorder(
+      enabledBorder: const OutlineInputBorder(
         borderRadius: BorderRadius.zero,
-        borderSide: const BorderSide(color: Color(0xFF1A2030)),
+        borderSide: BorderSide(color: AppColors.border),
       ),
-      focusedBorder: OutlineInputBorder(
+      focusedBorder: const OutlineInputBorder(
         borderRadius: BorderRadius.zero,
-        borderSide: const BorderSide(color: Color(0xFF3B82F6), width: 1.5),
+        borderSide: BorderSide(color: AppColors.accentPrimary, width: 1.5),
       ),
       errorBorder: const OutlineInputBorder(
         borderRadius: BorderRadius.zero,
-        borderSide: BorderSide(color: Color(0xFFFF4444)),
+        borderSide: BorderSide(color: AppColors.error),
       ),
       focusedErrorBorder: const OutlineInputBorder(
         borderRadius: BorderRadius.zero,
-        borderSide: BorderSide(color: Color(0xFFFF4444), width: 1.5),
+        borderSide: BorderSide(color: AppColors.error, width: 1.5),
       ),
       filled: true,
       fillColor: focused
-          ? const Color(0xFF0D1219)
-          : const Color(0xFF0F1318),
+          ? AppColors.surfaceHover
+          : AppColors.surface,
     );
   }
 
@@ -172,7 +174,7 @@ class _ContactFormWidgetState extends State<ContactFormWidget>
         boxShadow: focused
             ? [
                 BoxShadow(
-                  color: const Color(0x263B82F6),
+                  color: AppColors.accentPrimary.withValues(alpha: 0.15),
                   blurRadius: 16,
                   spreadRadius: 0,
                   offset: Offset.zero,
@@ -187,9 +189,9 @@ class _ContactFormWidgetState extends State<ContactFormWidget>
         keyboardType: keyboardType,
         validator: validator,
         enabled: _state != _SendState.loading,
-        style: GoogleFonts.jetBrainsMono(
+        style: AppTypography.code.copyWith(
           fontSize: 13,
-          color: const Color(0xFFE8EDF5),
+          color: AppColors.textPrimary,
         ),
         decoration: _fieldDecoration(
           label: label,
@@ -205,9 +207,9 @@ class _ContactFormWidgetState extends State<ContactFormWidget>
     final bool isSuccess = _state == _SendState.success;
     final bool isError = _state == _SendState.error;
 
-    Color bgColor = const Color(0xFF3B82F6);
-    if (isSuccess) bgColor = const Color(0xFF00FF88);
-    if (isError) bgColor = const Color(0xFFFF4444);
+    Color bgColor = AppColors.accentPrimary;
+    if (isSuccess) bgColor = AppColors.accentSuccess;
+    if (isError) bgColor = AppColors.error;
 
     return MouseRegion(
       cursor: isLoading ? SystemMouseCursors.wait : SystemMouseCursors.click,
@@ -244,15 +246,15 @@ class _ContactFormWidgetState extends State<ContactFormWidget>
                           height: 16,
                           child: CircularProgressIndicator(
                             strokeWidth: 2,
-                            color: Colors.white,
+                            color: AppColors.background,
                           ),
                         ),
                         const SizedBox(width: 12),
                         Text(
                           'Sending...',
-                          style: GoogleFonts.jetBrainsMono(
+                          style: AppTypography.code.copyWith(
                             fontSize: 13,
-                            color: Colors.white,
+                            color: AppColors.background,
                             fontWeight: FontWeight.w600,
                           ),
                         ),
@@ -265,14 +267,14 @@ class _ContactFormWidgetState extends State<ContactFormWidget>
                             const Icon(
                               Icons.check_circle_outline,
                               size: 18,
-                              color: Colors.black,
+                              color: AppColors.background,
                             ),
                             const SizedBox(width: 10),
                             Text(
                               'Message Sent!',
-                              style: GoogleFonts.jetBrainsMono(
+                              style: AppTypography.code.copyWith(
                                 fontSize: 13,
-                                color: Colors.black,
+                                color: AppColors.background,
                                 fontWeight: FontWeight.w700,
                               ),
                             ),
@@ -285,14 +287,14 @@ class _ContactFormWidgetState extends State<ContactFormWidget>
                                 const Icon(
                                   Icons.error_outline,
                                   size: 18,
-                                  color: Colors.white,
+                                  color: AppColors.background,
                                 ),
                                 const SizedBox(width: 10),
                                 Text(
                                   'Failed — Try Again',
-                                  style: GoogleFonts.jetBrainsMono(
+                                  style: AppTypography.code.copyWith(
                                     fontSize: 13,
-                                    color: Colors.white,
+                                    color: AppColors.background,
                                     fontWeight: FontWeight.w700,
                                   ),
                                 ),
@@ -304,14 +306,14 @@ class _ContactFormWidgetState extends State<ContactFormWidget>
                                 const Icon(
                                   Icons.send_rounded,
                                   size: 16,
-                                  color: Colors.white,
+                                  color: AppColors.background,
                                 ),
                                 const SizedBox(width: 10),
                                 Text(
                                   'Send Message',
-                                  style: GoogleFonts.jetBrainsMono(
+                                  style: AppTypography.code.copyWith(
                                     fontSize: 13,
-                                    color: Colors.white,
+                                    color: AppColors.background,
                                     fontWeight: FontWeight.w700,
                                     letterSpacing: 0.5,
                                   ),
@@ -329,10 +331,10 @@ class _ContactFormWidgetState extends State<ContactFormWidget>
   Widget build(BuildContext context) {
     return Container(
       padding: const EdgeInsets.all(36),
-      decoration: const BoxDecoration(
-        color: Color(0xFF0F1318),
+      decoration: BoxDecoration(
+        color: AppColors.surface,
         border: Border.fromBorderSide(
-          BorderSide(color: Color(0xFF1A2030)),
+          BorderSide(color: AppColors.border),
         ),
       ),
       child: Form(

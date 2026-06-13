@@ -21,28 +21,18 @@ class SectionHeader extends StatelessWidget {
       children: [
         Text(
           '// $overline'.toUpperCase(),
-          style: GoogleFonts.jetBrainsMono(
-            fontSize: 11,
-            color: const Color(0x993B82F6),
-            letterSpacing: 2.2,
-          ),
+          style: AppTypography.overline,
         ),
         const SizedBox(height: 8),
         Text(
           title,
-          style: GoogleFonts.syne(
-            fontSize: 52,
-            fontWeight: FontWeight.w800,
-            color: Colors.white,
-            letterSpacing: -1.04,
-            height: 1.1,
-          ),
+          style: AppTypography.headlineLarge,
         ),
         const SizedBox(height: 16),
         Container(
-          width: 40,
-          height: 3,
-          color: AppColors.accentCyan,
+          width: 32,
+          height: 2,
+          color: AppColors.accentPrimary,
         ),
       ],
     );

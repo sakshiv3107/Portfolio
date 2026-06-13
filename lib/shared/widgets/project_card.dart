@@ -40,14 +40,14 @@ class _ProjectCardState extends State<ProjectCard> {
           Container(
             padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
             decoration: BoxDecoration(
-              color: AppColors.accentCyan.withOpacity(0.1),
+              color: AppColors.accentPrimary.withValues(alpha: 0.1),
               borderRadius: BorderRadius.circular(AppSpacing.pillRadius),
-              border: Border.all(color: AppColors.accentCyanMuted),
+              border: Border.all(color: AppColors.borderAccent),
             ),
             child: Text(
               widget.project.category,
               style: AppTypography.bodySmall.copyWith(
-                color: AppColors.accentCyan,
+                color: AppColors.accentPrimary,
                 fontWeight: FontWeight.w600,
               ),
             ),
@@ -62,7 +62,7 @@ class _ProjectCardState extends State<ProjectCard> {
           Text(
             widget.project.subtitle,
             style: AppTypography.bodySmall.copyWith(
-              color: AppColors.accentCyan.withOpacity(0.7),
+              color: AppColors.accentPrimary.withValues(alpha: 0.7),
             ),
           ),
           const SizedBox(height: AppSpacing.md),
@@ -93,13 +93,13 @@ class _ProjectCardState extends State<ProjectCard> {
                       borderRadius:
                           BorderRadius.circular(AppSpacing.pillRadius),
                       border: Border.all(
-                        color: AppColors.accentCyan.withOpacity(0.25),
+                        color: AppColors.accentPrimary.withValues(alpha: 0.25),
                       ),
                     ),
                     child: Text(
                       tech,
                       style: AppTypography.bodySmall.copyWith(
-                        color: AppColors.accentCyan,
+                        color: AppColors.accentPrimary,
                       ),
                     ),
                   ),
