@@ -56,13 +56,13 @@ final darkCommerce = ProjectData(
   isLive: false,
 );
 
-final decodingVisuals = ProjectData(
+final financeTracker = ProjectData(
   number: '04',
-  title: 'Decoding Visuals',
-  subtitle: 'Hackathon: AI-powered visual interpretation system',
-  description: 'Uses Generative AI to interpret complex visual content and make data visualizations accessible to non-visual users via multimodal LLMs.',
-  badgeType: 'AI',
-  status: 'In Development',
-  tags: ['Generative AI', 'Multimodal LLM', 'Python', 'Flutter'],
-  isLive: false,
+  title: 'Finance Tracker',
+  subtitle: 'Personal finance management app',
+  description: 'A comprehensive finance tracker app built with Flutter and Dart. Features expense tracking, budgeting, and financial insights with an intuitive user interface.',
+  badgeType: 'Flutter',
+  status: 'Completed',
+  tags: ['Flutter', 'Dart', 'State Management'],
+  isLive: true,
 );

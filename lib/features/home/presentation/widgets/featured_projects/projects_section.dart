@@ -114,7 +114,7 @@ class _ProjectsSectionState extends State<ProjectsSection> with TickerProviderSt
                           Container(width: 1, color: const Color(0x0FFFFFFF)),
                           Expanded(
                             child: ProjectCard(
-                              data: decodingVisuals,
+                              data: financeTracker,
                               animationDelay: const Duration(milliseconds: 550),
                               entryAnimation: _entryController,
                               activeFilter: _activeFilter,

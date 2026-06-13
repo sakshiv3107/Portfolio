@@ -175,7 +175,7 @@ class _ContactInfoWidgetState extends State<ContactInfoWidget>
                         ),
                         const SizedBox(height: 3),
                         Text(
-                          'Summer / Fall 2025 · Flutter & Mobile',
+                          'Summer / Fall 2026 · Flutter & Mobile',
                           style: GoogleFonts.jetBrainsMono(
                             fontSize: 11,
                             color: const Color(0xFF6B7A8D),

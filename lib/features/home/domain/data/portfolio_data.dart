@@ -82,24 +82,23 @@ class PortfolioData {
       category: 'Flutter',
     ),
     Project(
-      id: 'decoding-visuals',
-      title: 'Decoding Visuals',
-      subtitle: 'Hackathon: AI-powered visual interpretation system',
+      id: 'finance-tracker',
+      title: 'Finance Tracker',
+      subtitle: 'Personal finance management application',
       description:
-          'Uses Generative AI to interpret and describe complex visual content, making data visualizations and infographics accessible to non-visual users. Addresses a real accessibility gap in how charts and graphs are consumed.',
+          'A comprehensive finance tracker app built with Flutter and Dart. Features expense tracking, budgeting, and financial insights with an intuitive user interface.',
       problem:
-          'Charts and infographics are largely inaccessible to visually impaired users.',
+          'Managing personal finances across multiple accounts is complicated and lacks unified insights.',
       approach:
-          'Multimodal generative AI model processes images and returns rich natural language descriptions. Presented at college-level hackathon.',
+          'Built using Flutter and Dart with a focus on a clean, responsive UI and robust state management for real-time financial tracking.',
       technologies: [
-        'Generative AI',
-        'Multimodal LLM',
-        'Python',
         'Flutter',
+        'Dart',
+        'State Management',
       ],
       outcomes:
-          'First hackathon project integrating GenAI for an accessibility use case.',
-      category: 'AI',
+          'Provides users with clear financial insights and a seamless tracking experience.',
+      category: 'Flutter',
     ),
   ];
 
@@ -243,9 +242,9 @@ class PortfolioData {
       'detail': 'Designing branding assets for 1000+ member chapter',
     },
     {
-      'icon': '🤖',
-      'title': 'GenAI Accessibility Hackathon',
-      'detail': 'Decoding Visuals — AI for visually impaired users',
+      'icon': '💰',
+      'title': 'Finance Tracker',
+      'detail': 'Built a personal finance app with Flutter and Dart',
     },
   ];
 
